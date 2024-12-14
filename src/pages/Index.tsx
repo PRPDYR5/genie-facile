@@ -1,29 +1,36 @@
 import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
-import { BrainCircuit, Atom, Code } from "lucide-react";
+import { FileText, BookOpen, MessageSquare, ClipboardList } from "lucide-react";
 
-const subjects = [
+const features = [
   {
-    title: "Mathématiques",
-    icon: BrainCircuit,
-    description: "Algèbre, géométrie, analyse et plus encore",
+    title: "Cours PDF",
+    description: "Accédez aux cours sous forme de documents PDF organisés par classe et matière",
+    icon: FileText,
     color: "bg-blue-500",
-    url: "/courses/math",
+    url: "/courses/pdf"
   },
   {
-    title: "Sciences Physiques",
-    icon: Atom,
-    description: "Mécanique, électricité, optique et chimie",
-    color: "bg-purple-500",
-    url: "/courses/physics",
-  },
-  {
-    title: "Informatique",
-    icon: Code,
-    description: "Programmation, algorithmes et structures de données",
+    title: "Résumés",
+    description: "Consultez des résumés concis et faciles à comprendre pour chaque cours",
+    icon: BookOpen,
     color: "bg-green-500",
-    url: "/courses/info",
+    url: "/courses/summaries"
   },
+  {
+    title: "Questions-réponses",
+    description: "Posez vos questions et recevez des réponses claires et pédagogiques",
+    icon: MessageSquare,
+    color: "bg-purple-500",
+    url: "/courses/qa"
+  },
+  {
+    title: "Sujets d'exercices",
+    description: "Accédez aux exercices proposés pour chaque chapitre ou thème",
+    icon: ClipboardList,
+    color: "bg-orange-500",
+    url: "/courses/exercises"
+  }
 ];
 
 const Index = () => {
@@ -35,6 +42,26 @@ const Index = () => {
           <p className="text-xl text-muted-foreground">
             Votre compagnon d'études pour la série F3
           </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {features.map((feature) => (
+            <a
+              key={feature.title}
+              href={feature.url}
+              className="transform transition-all hover:scale-105"
+            >
+              <Card className="p-6 h-full">
+                <div className="space-y-4">
+                  <div className={`${feature.color} w-12 h-12 rounded-lg flex items-center justify-center`}>
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-semibold">{feature.title}</h2>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </div>
+              </Card>
+            </a>
+          ))}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
