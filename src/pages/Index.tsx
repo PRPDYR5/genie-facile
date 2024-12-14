@@ -1,6 +1,6 @@
 import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
-import { FileText, BookOpen, MessageSquare, ClipboardList } from "lucide-react";
+import { FileText, BookOpen, MessageSquare, ClipboardList, BrainCircuit, Atom, Code } from "lucide-react";
 
 const features = [
   {
@@ -31,6 +31,30 @@ const features = [
     color: "bg-orange-500",
     url: "/courses/exercises"
   }
+];
+
+const subjects = [
+  {
+    title: "Mathématiques",
+    icon: BrainCircuit,
+    description: "Algèbre, géométrie, analyse et plus encore",
+    color: "bg-blue-500",
+    url: "/courses/math",
+  },
+  {
+    title: "Sciences Physiques",
+    icon: Atom,
+    description: "Mécanique, électricité, optique et chimie",
+    color: "bg-purple-500",
+    url: "/courses/physics",
+  },
+  {
+    title: "Informatique",
+    icon: Code,
+    description: "Programmation, algorithmes et structures de données",
+    color: "bg-green-500",
+    url: "/courses/info",
+  },
 ];
 
 const Index = () => {
