@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrainCircuit, Atom, Code } from "lucide-react";
 import { PDFViewer } from "@/components/PDFViewer";
+import { PDFList } from "@/components/PDFList";
 
 const subjects = {
   math: {
@@ -59,7 +60,6 @@ export default function Courses() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-4">
-                    {/* Ici, nous afficherons la liste des PDFs disponibles */}
                     <PDFList 
                       level={selectedLevel} 
                       subject={key} 
