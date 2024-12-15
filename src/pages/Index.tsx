@@ -1,4 +1,6 @@
 import { Layout } from "@/components/Layout";
+import { SearchBar } from "@/components/SearchBar";
+import { UserDashboard } from "@/components/UserDashboard";
 import { Card } from "@/components/ui/card";
 import { FileText, BookOpen, MessageSquare, ClipboardList, BrainCircuit, Atom, Code } from "lucide-react";
 
@@ -86,6 +88,12 @@ const Index = () => {
               Voir les résumés
             </a>
           </div>
+        </div>
+
+        {/* Search and Dashboard Section */}
+        <div className="space-y-8">
+          <SearchBar />
+          <UserDashboard />
         </div>
 
         {/* Features Section */}
