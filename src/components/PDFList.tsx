@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PDFListProps {
   level: string;
@@ -10,10 +11,10 @@ interface PDFListProps {
 
 export function PDFList({ level, subject, onSelect }: PDFListProps) {
   const [pdfs, setPdfs] = useState<{ name: string; url: string }[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Ici, nous simulerons une liste de PDFs
-    // Dans une vraie application, cela viendrait d'une base de données
+    // Simulation de chargement des PDFs
     const mockPDFs = [
       {
         name: "Chapitre 1 - Introduction",
@@ -23,11 +24,24 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         name: "Chapitre 2 - Concepts de base",
         url: `/pdfs/${level}/${subject}/chapitre2.pdf`
       },
+      {
+        name: "Chapitre 3 - Applications",
+        url: `/pdfs/${level}/${subject}/chapitre3.pdf`
+      }
     ];
     
     setPdfs(mockPDFs);
-    console.log("Loading PDFs for:", level, subject);
+    console.log("Chargement des PDFs pour:", level, subject);
   }, [level, subject]);
+
+  const handlePDFSelect = (pdf: { name: string; url: string }) => {
+    console.log("PDF sélectionné:", pdf.name);
+    onSelect(pdf.url);
+    toast({
+      title: "PDF chargé",
+      description: `Le document "${pdf.name}" a été chargé avec succès.`,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -36,7 +50,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
           key={pdf.name}
           variant="outline"
           className="w-full justify-start gap-2 glass"
-          onClick={() => onSelect(pdf.url)}
+          onClick={() => handlePDFSelect(pdf)}
         >
           <FileText className="w-4 h-4" />
           {pdf.name}
