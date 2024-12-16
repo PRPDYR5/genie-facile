@@ -1,35 +1,38 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Search, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function UserDashboard() {
+  const navigate = useNavigate();
+
   const dashboardItems = [
     {
       title: "Accès aux cours",
       icon: FileText,
       description: "Accédez à tous vos cours et documents",
-      link: "/courses"
+      onClick: () => navigate("/courses")
     },
     {
       title: "Recherche avancée",
       icon: Search,
       description: "Recherchez des contenus spécifiques",
-      link: "/search"
+      onClick: () => navigate("/search")
     },
     {
       title: "Paramètres",
       icon: Settings,
       description: "Personnalisez votre expérience",
-      link: "/settings"
+      onClick: () => navigate("/settings")
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {dashboardItems.map((item) => (
-        <a
+        <div
           key={item.title}
-          href={item.link}
-          className="transform transition-all duration-300 hover:scale-[1.02]"
+          onClick={item.onClick}
+          className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
         >
           <Card className="h-full glass card-hover">
             <CardHeader>
@@ -44,7 +47,7 @@ export function UserDashboard() {
               <p className="text-[#9b87f5]/70">{item.description}</p>
             </CardContent>
           </Card>
-        </a>
+        </div>
       ))}
     </div>
   );
