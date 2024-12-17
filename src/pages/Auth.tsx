@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -63,8 +64,20 @@ export default function Auth() {
     }
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
+      <Button 
+        variant="ghost" 
+        className="absolute top-4 left-4"
+        onClick={handleBack}
+      >
+        <ArrowLeft className="h-6 w-6" />
+      </Button>
+      
       <Card className="w-full max-w-md p-8 space-y-8 glass">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-[#9b87f5]">
