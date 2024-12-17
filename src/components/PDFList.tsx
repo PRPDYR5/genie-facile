@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 interface PDFListProps {
   level: string;
@@ -14,25 +15,38 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulation de chargement des PDFs
-    const mockPDFs = [
-      {
-        name: "Chapitre 1 - Introduction",
-        url: `/pdfs/${level}/${subject}/chapitre1.pdf`
-      },
-      {
-        name: "Chapitre 2 - Concepts de base",
-        url: `/pdfs/${level}/${subject}/chapitre2.pdf`
-      },
-      {
-        name: "Chapitre 3 - Applications",
-        url: `/pdfs/${level}/${subject}/chapitre3.pdf`
+    const loadPDFs = async () => {
+      try {
+        console.log("Chargement des PDFs pour:", level, subject);
+        const path = `${level}/${subject}`;
+        const { data, error } = await supabase.storage
+          .from('pdfs')
+          .list(path);
+
+        if (error) {
+          throw error;
+        }
+
+        const pdfFiles = data
+          .filter(file => file.name.endsWith('.pdf'))
+          .map(file => ({
+            name: file.name.replace('.pdf', ''),
+            url: `${path}/${file.name}`
+          }));
+
+        setPdfs(pdfFiles);
+      } catch (error) {
+        console.error("Erreur lors du chargement des PDFs:", error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de charger la liste des PDFs",
+        });
       }
-    ];
-    
-    setPdfs(mockPDFs);
-    console.log("Chargement des PDFs pour:", level, subject);
-  }, [level, subject]);
+    };
+
+    loadPDFs();
+  }, [level, subject, toast]);
 
   const handlePDFSelect = (pdf: { name: string; url: string }) => {
     console.log("PDF sélectionné:", pdf.name);
