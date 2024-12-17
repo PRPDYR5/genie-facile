@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 
@@ -19,33 +19,44 @@ export default function Auth() {
     setLoading(true);
     
     try {
+      console.log("Tentative d'authentification...");
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log("Mode connexion");
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) throw error;
+        if (signInError) throw signInError;
+        
+        console.log("Connexion réussie");
         toast({
           title: "Connexion réussie",
           description: "Bienvenue sur Génie Facile !",
         });
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        console.log("Mode inscription");
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin
+          }
         });
-        if (error) throw error;
+        if (signUpError) throw signUpError;
+        
+        console.log("Inscription réussie");
         toast({
           title: "Compte créé avec succès",
           description: "Vérifiez votre email pour confirmer votre compte.",
         });
       }
     } catch (error: any) {
+      console.error("Erreur d'authentification:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: error.message,
+        description: error.message || "Une erreur est survenue lors de l'authentification",
       });
     } finally {
       setLoading(false);
@@ -53,10 +64,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
       <Card className="w-full max-w-md p-8 space-y-8 glass">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold gradient-text">
+          <h1 className="text-3xl font-bold text-[#9b87f5]">
             {isLogin ? "Connexion" : "Créer un compte"}
           </h1>
           <p className="text-muted-foreground">
@@ -74,6 +85,7 @@ export default function Auth() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="glass"
             />
             <Input
               type="password"
@@ -81,12 +93,13 @@ export default function Auth() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="glass"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-[#9b87f5] hover:bg-[#8b77e5]"
             disabled={loading}
           >
             {loading
@@ -101,7 +114,7 @@ export default function Auth() {
           <Button
             variant="link"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-primary"
+            className="text-[#9b87f5]"
           >
             {isLogin
               ? "Pas encore de compte ? S'inscrire"
