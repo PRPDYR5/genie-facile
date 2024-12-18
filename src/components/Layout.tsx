@@ -10,7 +10,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isHomePage = location.pathname === "/";
 
   const handleBack = () => {
-    navigate(-1);
+    try {
+      navigate(-1);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      // En cas d'erreur, rediriger vers la page d'accueil
+      navigate("/");
+    }
   };
 
   return (
