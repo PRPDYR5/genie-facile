@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
+import { Layout } from "@/components/Layout";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -64,64 +65,66 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
-      <Card className="w-full max-w-md p-8 space-y-8 glass">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-[#9b87f5]">
-            {isLogin ? "Connexion" : "Créer un compte"}
-          </h1>
-          <p className="text-muted-foreground">
-            {isLogin
-              ? "Connectez-vous pour accéder à vos cours"
-              : "Inscrivez-vous pour commencer à apprendre"}
-          </p>
-        </div>
-
-        <form onSubmit={handleAuth} className="space-y-6">
-          <div className="space-y-4">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="glass"
-            />
-            <Input
-              type="password"
-              placeholder="Mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="glass"
-            />
+    <Layout>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
+        <Card className="w-full max-w-md p-8 space-y-8 glass">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-[#9b87f5]">
+              {isLogin ? "Connexion" : "Créer un compte"}
+            </h1>
+            <p className="text-muted-foreground">
+              {isLogin
+                ? "Connectez-vous pour accéder à vos cours"
+                : "Inscrivez-vous pour commencer à apprendre"}
+            </p>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-[#9b87f5] hover:bg-[#8b77e5]"
-            disabled={loading}
-          >
-            {loading
-              ? "Chargement..."
-              : isLogin
-              ? "Se connecter"
-              : "Créer un compte"}
-          </Button>
-        </form>
+          <form onSubmit={handleAuth} className="space-y-6">
+            <div className="space-y-4">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="glass"
+              />
+              <Input
+                type="password"
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="glass"
+              />
+            </div>
 
-        <div className="text-center">
-          <Button
-            variant="link"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-[#9b87f5]"
-          >
-            {isLogin
-              ? "Pas encore de compte ? S'inscrire"
-              : "Déjà un compte ? Se connecter"}
-          </Button>
-        </div>
-      </Card>
-    </div>
+            <Button
+              type="submit"
+              className="w-full bg-[#9b87f5] hover:bg-[#8b77e5]"
+              disabled={loading}
+            >
+              {loading
+                ? "Chargement..."
+                : isLogin
+                ? "Se connecter"
+                : "Créer un compte"}
+            </Button>
+          </form>
+
+          <div className="text-center">
+            <Button
+              variant="link"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-[#9b87f5]"
+            >
+              {isLogin
+                ? "Pas encore de compte ? S'inscrire"
+                : "Déjà un compte ? Se connecter"}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </Layout>
   );
 }
