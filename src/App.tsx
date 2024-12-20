@@ -8,6 +8,9 @@ import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
+import Summaries from "./pages/Summaries";
+import QA from "./pages/QA";
+import Exercises from "./pages/Exercises";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
           <Route path="/courses/*" element={<Courses />} />
           <Route path="/search" element={<Search />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/courses/summaries" element={<Summaries />} />
+          <Route path="/courses/qa" element={<QA />} />
+          <Route path="/courses/exercises" element={<Exercises />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
