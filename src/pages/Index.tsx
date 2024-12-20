@@ -2,35 +2,28 @@ import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { UserDashboard } from "@/components/UserDashboard";
 import { Card } from "@/components/ui/card";
-import { FileText, BookOpen, MessageSquare, ClipboardList, BrainCircuit, Atom, Code } from "lucide-react";
+import { BookOpen, MessageSquare, ClipboardList, BrainCircuit, Atom, Code } from "lucide-react";
 
 const features = [
   {
-    title: "Cours PDF",
-    description: "Accédez aux cours complets par niveau et matière",
-    icon: FileText,
-    color: "bg-[#9b87f5]/20",
-    url: "/courses/pdf"
-  },
-  {
     title: "Résumés",
-    description: "Consultez les résumés organisés par niveau et matière",
+    description: "Chaque cours dispose d'un résumé concis et facile à comprendre",
     icon: BookOpen,
-    color: "bg-[#7E69AB]/20",
+    color: "bg-[#9b87f5]/20",
     url: "/courses/summaries"
   },
   {
     title: "Questions-réponses",
-    description: "Posez vos questions et recevez des réponses claires",
+    description: "Testez vos connaissances avec des questions interactives et recevez des explications détaillées",
     icon: MessageSquare,
-    color: "bg-[#6E59A5]/20",
+    color: "bg-[#7E69AB]/20",
     url: "/courses/qa"
   },
   {
-    title: "Exercices",
-    description: "Pratiquez avec des exercices adaptés à votre niveau",
+    title: "Sujets d'exercices",
+    description: "Pratiquez avec des exercices adaptés pour chaque chapitre",
     icon: ClipboardList,
-    color: "bg-[#9b87f5]/20",
+    color: "bg-[#6E59A5]/20",
     url: "/courses/exercises"
   }
 ];
@@ -76,16 +69,16 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
             <a
-              href="/courses/pdf"
+              href="/courses/summaries"
               className="px-8 py-4 bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-xl hover:scale-105 transition-all duration-300 font-medium text-lg shadow-lg shadow-[#9b87f5]/20"
             >
-              Accéder aux cours
+              Voir les résumés
             </a>
             <a
-              href="/courses/summaries"
+              href="/courses/qa"
               className="px-8 py-4 bg-[#9b87f5]/10 border border-[#9b87f5]/20 text-[#9b87f5] rounded-xl hover:scale-105 transition-all duration-300 font-medium text-lg backdrop-blur-sm"
             >
-              Voir les résumés
+              Questions-réponses
             </a>
           </div>
         </div>
@@ -97,7 +90,7 @@ const Index = () => {
         </div>
 
         {/* Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature) => (
             <a
               key={feature.title}
