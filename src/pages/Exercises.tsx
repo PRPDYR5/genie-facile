@@ -1,8 +1,25 @@
 import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { ClipboardList } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const Exercises = () => {
+  const [selectedLevel, setSelectedLevel] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+
+  const levels = [
+    { value: "seconde", label: "Seconde" },
+    { value: "premiere", label: "Première" },
+    { value: "terminale", label: "Terminale" }
+  ];
+
+  const subjects = [
+    { value: "math", label: "Mathématiques" },
+    { value: "physics", label: "Sciences Physiques" },
+    { value: "info", label: "Informatique" }
+  ];
+
   const exercises = [
     {
       title: "Série d'exercices - Fonctions",
@@ -27,6 +44,12 @@ const Exercises = () => {
     }
   ];
 
+  const filteredExercises = exercises.filter(exercise => {
+    if (selectedLevel && exercise.level.toLowerCase() !== selectedLevel) return false;
+    if (selectedSubject && exercise.subject !== subjects.find(s => s.value === selectedSubject)?.label) return false;
+    return true;
+  });
+
   return (
     <Layout>
       <div className="space-y-8 animate-fade-in">
@@ -37,8 +60,42 @@ const Exercises = () => {
           </p>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm text-[#9b87f5]">Niveau</label>
+            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un niveau" />
+              </SelectTrigger>
+              <SelectContent>
+                {levels.map((level) => (
+                  <SelectItem key={level.value} value={level.value}>
+                    {level.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm text-[#9b87f5]">Matière</label>
+            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir une matière" />
+              </SelectTrigger>
+              <SelectContent>
+                {subjects.map((subject) => (
+                  <SelectItem key={subject.value} value={subject.value}>
+                    {subject.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div className="grid gap-6">
-          {exercises.map((exercise, index) => (
+          {filteredExercises.map((exercise, index) => (
             <Card key={index} className="p-6 glass card-hover">
               <div className="flex items-start gap-4">
                 <div className="bg-[#9b87f5]/20 p-3 rounded-lg">
