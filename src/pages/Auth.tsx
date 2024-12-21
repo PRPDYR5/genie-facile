@@ -43,16 +43,13 @@ export default function Auth() {
     
     try {
       console.log("Tentative d'authentification...");
-      const redirectTo = window.location.origin + "/auth/callback";
+      const emailRedirectTo = `${window.location.origin}/auth/callback`;
       
       if (isLogin) {
         console.log("Mode connexion");
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
-          options: {
-            redirectTo
-          }
         });
         if (signInError) throw signInError;
         
@@ -68,7 +65,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            redirectTo
+            emailRedirectTo
           }
         });
         if (signUpError) throw signUpError;
