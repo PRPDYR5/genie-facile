@@ -27,12 +27,20 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
           throw error;
         }
 
-        const pdfFiles = data
-          .filter(file => file.name.endsWith('.pdf'))
-          .map(file => ({
-            name: file.name.replace('.pdf', ''),
-            url: `${path}/${file.name}`
-          }));
+        const pdfFiles = await Promise.all(
+          data
+            .filter(file => file.name.endsWith('.pdf'))
+            .map(async file => {
+              const { data: { publicUrl } } = supabase.storage
+                .from('pdfs')
+                .getPublicUrl(`${path}/${file.name}`);
+
+              return {
+                name: file.name.replace('.pdf', ''),
+                url: publicUrl
+              };
+            })
+        );
 
         setPdfs(pdfFiles);
       } catch (error) {
@@ -59,17 +67,23 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
 
   return (
     <div className="space-y-4">
-      {pdfs.map((pdf) => (
-        <Button
-          key={pdf.name}
-          variant="outline"
-          className="w-full justify-start gap-2 glass"
-          onClick={() => handlePDFSelect(pdf)}
-        >
-          <FileText className="w-4 h-4" />
-          {pdf.name}
-        </Button>
-      ))}
+      {pdfs.length === 0 ? (
+        <p className="text-center text-[#9b87f5]/70">
+          Aucun cours disponible pour le moment
+        </p>
+      ) : (
+        pdfs.map((pdf) => (
+          <Button
+            key={pdf.name}
+            variant="outline"
+            className="w-full justify-start gap-2 glass"
+            onClick={() => handlePDFSelect(pdf)}
+          >
+            <FileText className="w-4 h-4" />
+            {pdf.name}
+          </Button>
+        ))
+      )}
     </div>
   );
 }
