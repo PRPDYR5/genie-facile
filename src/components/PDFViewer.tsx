@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PDFViewerProps {
   url: string;
@@ -13,7 +13,6 @@ export function PDFViewer({ url }: PDFViewerProps) {
     const loadPDF = async () => {
       try {
         console.log("Chargement du PDF:", url);
-        // Télécharger le PDF depuis Supabase Storage
         const { data, error } = await supabase.storage
           .from('pdfs')
           .download(url);
@@ -23,7 +22,6 @@ export function PDFViewer({ url }: PDFViewerProps) {
           throw error;
         }
 
-        // Créer une URL pour le blob
         const pdfBlob = new Blob([data], { type: 'application/pdf' });
         const pdfObjectUrl = URL.createObjectURL(pdfBlob);
         setPdfUrl(pdfObjectUrl);
@@ -36,7 +34,6 @@ export function PDFViewer({ url }: PDFViewerProps) {
 
     loadPDF();
 
-    // Nettoyer l'URL de l'objet lors du démontage
     return () => {
       if (pdfUrl) {
         URL.revokeObjectURL(pdfUrl);
