@@ -1,9 +1,37 @@
 import { Link } from "react-router-dom";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Home, BookOpen, Search, Settings, LogIn } from "lucide-react";
+import { Home, BookOpen, Search, Settings, LogIn, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      console.log("Tentative de déconnexion...");
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      console.log("Déconnexion réussie");
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+      navigate("/auth");
+    } catch (error: any) {
+      console.error("Erreur de déconnexion:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la déconnexion",
+      });
+    }
+  };
+
   return (
     <Sidebar>
       <div className="space-y-4 py-4">
@@ -40,6 +68,14 @@ export function AppSidebar() {
                 Connexion
               </Button>
             </Link>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Déconnexion
+            </Button>
           </div>
         </div>
       </div>
