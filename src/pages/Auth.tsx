@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Layout } from "@/components/Layout";
 
@@ -16,7 +16,6 @@ export default function Auth() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -25,7 +24,6 @@ export default function Auth() {
     };
     checkUser();
 
-    // Écouter les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         navigate("/");
@@ -60,9 +58,6 @@ export default function Auth() {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
-          }
         });
         if (signUpError) throw signUpError;
         
@@ -147,4 +142,3 @@ export default function Auth() {
       </div>
     </Layout>
   );
-}
