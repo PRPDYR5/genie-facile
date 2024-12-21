@@ -17,9 +17,13 @@ export default function Auth() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/");
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la session:", error);
       }
     };
     checkUser();
@@ -39,11 +43,16 @@ export default function Auth() {
     
     try {
       console.log("Tentative d'authentification...");
+      const redirectTo = window.location.origin + "/auth/callback";
+      
       if (isLogin) {
         console.log("Mode connexion");
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
+          options: {
+            redirectTo
+          }
         });
         if (signInError) throw signInError;
         
@@ -58,6 +67,9 @@ export default function Auth() {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            redirectTo
+          }
         });
         if (signUpError) throw signUpError;
         
