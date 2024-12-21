@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrainCircuit, Atom, Code } from "lucide-react";
 import { PDFViewer } from "@/components/PDFViewer";
 import { PDFList } from "@/components/PDFList";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const subjects = {
   math: {
@@ -28,6 +29,7 @@ export default function Courses() {
   const [selectedLevel, setSelectedLevel] = useState("seconde");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedPDF, setSelectedPDF] = useState("");
+  const isMobile = useIsMobile();
 
   console.log("Selected level:", selectedLevel);
   console.log("Selected subject:", selectedSubject);
@@ -35,11 +37,13 @@ export default function Courses() {
 
   return (
     <Layout>
-      <div className="space-y-8">
-        <h1 className="text-4xl font-bold gradient-text">Cours PDF</h1>
+      <div className="space-y-6">
+        <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold gradient-text`}>
+          Cours PDF
+        </h1>
         
-        <Tabs defaultValue="seconde" onValueChange={setSelectedLevel}>
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="seconde" onValueChange={setSelectedLevel} className="w-full">
+          <TabsList className={`grid w-full grid-cols-3 ${isMobile ? 'text-sm' : ''}`}>
             <TabsTrigger value="seconde">Seconde</TabsTrigger>
             <TabsTrigger value="premiere">Première</TabsTrigger>
             <TabsTrigger value="terminale">Terminale</TabsTrigger>
@@ -47,19 +51,24 @@ export default function Courses() {
 
           {Object.entries(subjects).map(([key, subject]) => (
             <TabsContent key={key} value={selectedLevel}>
-              <Card className="glass" onClick={() => setSelectedSubject(key)}>
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-[#9b87f5]/20`}>
-                      <subject.icon className={`w-6 h-6 ${subject.color}`} />
+              <Card 
+                className={`glass transition-all duration-300 hover:shadow-lg ${
+                  isMobile ? 'p-2' : 'p-4'
+                }`} 
+                onClick={() => setSelectedSubject(key)}
+              >
+                <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
+                  <div className="flex items-center gap-3">
+                    <div className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} rounded-xl flex items-center justify-center bg-[#9b87f5]/20`}>
+                      <subject.icon className={`${isMobile ? 'w-4 h-4' : 'w-6 h-6'} ${subject.color}`} />
                     </div>
-                    <CardTitle className="text-xl text-[#9b87f5]">
+                    <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} text-[#9b87f5]`}>
                       {subject.name}
                     </CardTitle>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
+                <CardContent className={isMobile ? 'p-2' : 'p-4'}>
+                  <div className="grid gap-3">
                     <PDFList 
                       level={selectedLevel} 
                       subject={key} 
@@ -73,7 +82,9 @@ export default function Courses() {
         </Tabs>
 
         {selectedPDF && (
-          <PDFViewer url={selectedPDF} />
+          <div className={`mt-6 ${isMobile ? 'rounded-lg overflow-hidden' : ''}`}>
+            <PDFViewer url={selectedPDF} />
+          </div>
         )}
       </div>
     </Layout>

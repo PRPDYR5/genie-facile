@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PDFListProps {
   level: string;
@@ -13,6 +14,7 @@ interface PDFListProps {
 export function PDFList({ level, subject, onSelect }: PDFListProps) {
   const [pdfs, setPdfs] = useState<{ name: string; url: string }[]>([]);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadPDFs = async () => {
@@ -66,7 +68,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {pdfs.length === 0 ? (
         <p className="text-center text-[#9b87f5]/70">
           Aucun cours disponible pour le moment
@@ -76,11 +78,13 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
           <Button
             key={pdf.name}
             variant="outline"
-            className="w-full justify-start gap-2 glass"
+            className={`w-full justify-start gap-2 glass ${
+              isMobile ? 'text-sm py-2 px-3' : 'py-3 px-4'
+            }`}
             onClick={() => handlePDFSelect(pdf)}
           >
-            <FileText className="w-4 h-4" />
-            {pdf.name}
+            <FileText className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
+            <span className="truncate">{pdf.name}</span>
           </Button>
         ))
       )}
