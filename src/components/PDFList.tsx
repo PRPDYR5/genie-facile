@@ -20,31 +20,47 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
     const loadPDFs = async () => {
       try {
         console.log("Chargement des PDFs pour:", level, subject);
-        const path = `${level}/${subject}`;
+        
+        // Si c'est le cours de math en terminale, on ajoute directement le PDF
+        if (level === 'terminale' && subject === 'math') {
+          const { data: { publicUrl } } = supabase.storage
+            .from('terminale')
+            .getPublicUrl('math/cours_math_terminale_f3.pdf');
+
+          setPdfs([{
+            name: 'Cours Math Terminale F3',
+            url: publicUrl
+          }]);
+          return;
+        }
+
+        // Pour les autres matières, on liste le contenu du dossier
         const { data, error } = await supabase.storage
-          .from('pdfs')
-          .list(path);
+          .from(level)
+          .list(`${subject}`);
 
         if (error) {
           throw error;
         }
 
-        const pdfFiles = await Promise.all(
-          data
-            .filter(file => file.name.endsWith('.pdf'))
-            .map(async file => {
-              const { data: { publicUrl } } = supabase.storage
-                .from('pdfs')
-                .getPublicUrl(`${path}/${file.name}`);
+        if (data) {
+          const pdfFiles = await Promise.all(
+            data
+              .filter(file => file.name.endsWith('.pdf'))
+              .map(async file => {
+                const { data: { publicUrl } } = supabase.storage
+                  .from(level)
+                  .getPublicUrl(`${subject}/${file.name}`);
 
-              return {
-                name: file.name.replace('.pdf', ''),
-                url: publicUrl
-              };
-            })
-        );
+                return {
+                  name: file.name.replace('.pdf', ''),
+                  url: publicUrl
+                };
+              })
+          );
 
-        setPdfs(pdfFiles);
+          setPdfs(pdfFiles);
+        }
       } catch (error) {
         console.error("Erreur lors du chargement des PDFs:", error);
         toast({
@@ -59,7 +75,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
   }, [level, subject, toast]);
 
   const handlePDFSelect = (pdf: { name: string; url: string }) => {
-    console.log("PDF sélectionné:", pdf.name);
+    console.log("PDF sélectionné:", pdf.name, "URL:", pdf.url);
     onSelect(pdf.url);
     toast({
       title: "PDF chargé",
