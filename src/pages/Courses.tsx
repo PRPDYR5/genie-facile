@@ -5,6 +5,7 @@ import { PDFList } from "@/components/PDFList";
 import { PDFViewer } from "@/components/PDFViewer";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 
 const subjects = {
   math: "Mathématiques",
@@ -25,13 +26,19 @@ export default function Courses() {
   console.log("Selected subject:", selectedSubject);
   console.log("Selected PDF:", selectedPDF);
 
-  // Fonction pour gérer la sélection du module de mathématiques en Terminale
-  const handleMathSelection = () => {
-    if (selectedLevel === "terminale" && selectedSubject === "math") {
-      // Construction correcte de l'URL sans le ":" superflu
-      const pdfUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/terminale/math/cours_math_terminale_f3.pdf`;
-      console.log("PDF URL constructed:", pdfUrl);
-      setSelectedPDF(pdfUrl);
+  const handleMathSelection = async () => {
+    try {
+      if (selectedLevel === "terminale" && selectedSubject === "math") {
+        console.log("Chargement du PDF de mathématiques Terminale F3...");
+        const { data: { publicUrl } } = supabase.storage
+          .from('terminale')
+          .getPublicUrl('math/cours_math_terminale_f3.pdf');
+        
+        console.log("URL du PDF:", publicUrl);
+        setSelectedPDF(publicUrl);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement du PDF:", error);
     }
   };
 
@@ -49,26 +56,28 @@ export default function Courses() {
             <TabsTrigger value="terminale">Terminale</TabsTrigger>
           </TabsList>
 
-          {Object.entries(subjects).map(([key, value]) => (
-            <Card
-              key={key}
-              className={`glass transition-all duration-300 hover:shadow-lg ${
-                isMobile ? 'p-2' : 'p-4'
-              }`} 
-              onClick={() => {
-                setSelectedSubject(key);
-                if (key === 'math' && selectedLevel === 'terminale') {
-                  handleMathSelection();
-                }
-              }}
-            >
-              <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
-                <div className="flex items-center gap-3">
-                  <span className="font-medium">{value}</span>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
+          <div className="grid gap-4 mt-4">
+            {Object.entries(subjects).map(([key, value]) => (
+              <Card
+                key={key}
+                className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer ${
+                  isMobile ? 'p-2' : 'p-4'
+                }`} 
+                onClick={() => {
+                  setSelectedSubject(key);
+                  if (key === 'math' && selectedLevel === 'terminale') {
+                    handleMathSelection();
+                  }
+                }}
+              >
+                <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">{value}</span>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
 
           {selectedSubject && (
             <div className="mt-6">
