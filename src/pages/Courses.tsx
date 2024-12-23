@@ -26,7 +26,7 @@ const subjects = {
 };
 
 export default function Courses() {
-  const [selectedLevel, setSelectedLevel] = useState("seconde");
+  const [selectedLevel, setSelectedLevel] = useState("terminale");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedPDF, setSelectedPDF] = useState("");
   const isMobile = useIsMobile();
@@ -35,6 +35,14 @@ export default function Courses() {
   console.log("Selected subject:", selectedSubject);
   console.log("Selected PDF:", selectedPDF);
 
+  // Fonction pour gérer la sélection du module de mathématiques en Terminale
+  const handleMathSelection = () => {
+    if (selectedLevel === "terminale" && selectedSubject === "math") {
+      const pdfUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/terminale/math/cours_math_terminale_f3.pdf`;
+      setSelectedPDF(pdfUrl);
+    }
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -42,7 +50,7 @@ export default function Courses() {
           Cours PDF
         </h1>
         
-        <Tabs defaultValue="seconde" onValueChange={setSelectedLevel} className="w-full">
+        <Tabs defaultValue="terminale" onValueChange={setSelectedLevel} className="w-full">
           <TabsList className={`grid w-full grid-cols-3 ${isMobile ? 'text-sm' : ''}`}>
             <TabsTrigger value="seconde">Seconde</TabsTrigger>
             <TabsTrigger value="premiere">Première</TabsTrigger>
@@ -55,7 +63,12 @@ export default function Courses() {
                 className={`glass transition-all duration-300 hover:shadow-lg ${
                   isMobile ? 'p-2' : 'p-4'
                 }`} 
-                onClick={() => setSelectedSubject(key)}
+                onClick={() => {
+                  setSelectedSubject(key);
+                  if (key === 'math' && selectedLevel === 'terminale') {
+                    handleMathSelection();
+                  }
+                }}
               >
                 <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
                   <div className="flex items-center gap-3">
