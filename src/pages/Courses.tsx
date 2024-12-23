@@ -9,11 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 const subjects = {
   math: "Mathématiques",
-  physics: "Physique",
-  chemistry: "Chimie",
-  biology: "Biologie",
-  french: "Français",
-  english: "Anglais"
 };
 
 export default function Courses() {
@@ -28,13 +23,14 @@ export default function Courses() {
 
   const handleMathSelection = async () => {
     try {
-      if (selectedLevel === "terminale" && selectedSubject === "math") {
-        console.log("Chargement du PDF de mathématiques Terminale F3...");
+      if (selectedLevel === "terminale") {
+        console.log("Chargement du PDF de mathématiques Terminale...");
         const { data: { publicUrl } } = supabase.storage
           .from('terminale')
           .getPublicUrl('math/cours_math_terminale_f3.pdf');
         
         console.log("URL du PDF:", publicUrl);
+        setSelectedSubject("math");
         setSelectedPDF(publicUrl);
       }
     } catch (error) {
@@ -64,12 +60,7 @@ export default function Courses() {
                   className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer hover:scale-105 ${
                     selectedSubject === key ? 'border-2 border-[#9b87f5]' : ''
                   } ${isMobile ? 'p-2' : 'p-4'}`}
-                  onClick={() => {
-                    setSelectedSubject(key);
-                    if (key === 'math' && selectedLevel === 'terminale') {
-                      handleMathSelection();
-                    }
-                  }}
+                  onClick={handleMathSelection}
                 >
                   <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
                     <div className="flex items-center justify-center gap-3">
@@ -94,7 +85,7 @@ export default function Courses() {
                     />
                   </div>
                   <div className="w-full">
-                    {selectedPDF && <PDFViewer url={selectedPDF} />}
+                    <PDFViewer url={selectedPDF} />
                   </div>
                 </div>
               </div>
