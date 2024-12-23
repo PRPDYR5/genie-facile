@@ -45,7 +45,7 @@ export default function Courses() {
   return (
     <Layout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold text-[#9b87f5]">
           Cours PDF
         </h1>
         
@@ -56,45 +56,50 @@ export default function Courses() {
             <TabsTrigger value="terminale">Terminale</TabsTrigger>
           </TabsList>
 
-          <div className="grid gap-4 mt-4">
-            {Object.entries(subjects).map(([key, value]) => (
-              <Card
-                key={key}
-                className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer ${
-                  isMobile ? 'p-2' : 'p-4'
-                }`} 
-                onClick={() => {
-                  setSelectedSubject(key);
-                  if (key === 'math' && selectedLevel === 'terminale') {
-                    handleMathSelection();
-                  }
-                }}
-              >
-                <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium">{value}</span>
-                  </div>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-
-          {selectedSubject && (
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Documents disponibles pour {subjects[selectedSubject]}
-              </h2>
-              {selectedPDF ? (
-                <PDFViewer url={selectedPDF} />
-              ) : (
-                <PDFList
-                  level={selectedLevel}
-                  subject={selectedSubject}
-                  onSelect={setSelectedPDF}
-                />
-              )}
+          <TabsContent value={selectedLevel} className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(subjects).map(([key, value]) => (
+                <Card
+                  key={key}
+                  className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer hover:scale-105 ${
+                    selectedSubject === key ? 'border-2 border-[#9b87f5]' : ''
+                  } ${isMobile ? 'p-2' : 'p-4'}`}
+                  onClick={() => {
+                    setSelectedSubject(key);
+                    if (key === 'math' && selectedLevel === 'terminale') {
+                      handleMathSelection();
+                    }
+                  }}
+                >
+                  <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="font-medium text-center">{value}</span>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
             </div>
-          )}
+
+            {selectedSubject && (
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4 text-[#9b87f5]">
+                  Documents disponibles pour {subjects[selectedSubject]}
+                </h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <PDFList
+                      level={selectedLevel}
+                      subject={selectedSubject}
+                      onSelect={setSelectedPDF}
+                    />
+                  </div>
+                  <div className="w-full">
+                    {selectedPDF && <PDFViewer url={selectedPDF} />}
+                  </div>
+                </div>
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
