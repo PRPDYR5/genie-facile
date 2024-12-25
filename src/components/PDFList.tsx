@@ -40,7 +40,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         // Pour les autres matières, on liste le contenu du dossier
         const { data, error } = await supabase.storage
           .from('pdfs')
-          .list(`${level}`);
+          .list(`${level.toUpperCase()}`);
 
         if (error) {
           throw error;
@@ -53,7 +53,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
               .map(async file => {
                 const { data: { publicUrl } } = supabase.storage
                   .from('pdfs')
-                  .getPublicUrl(`${level}/${file.name}`);
+                  .getPublicUrl(`${level.toUpperCase()}/${file.name}`);
 
                 return {
                   name: file.name.replace('.pdf', ''),
