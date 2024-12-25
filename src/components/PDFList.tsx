@@ -30,10 +30,23 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
 
           console.log("URL du PDF générée:", publicUrl);
           
-          setPdfs([{
-            name: 'Cours Math Terminale F3',
-            url: publicUrl
-          }]);
+          // Vérifier si le fichier existe
+          const response = await fetch(publicUrl, { method: 'HEAD' });
+          console.log("Statut de la réponse:", response.status);
+          
+          if (response.ok) {
+            setPdfs([{
+              name: 'Cours Math Terminale F3',
+              url: publicUrl
+            }]);
+          } else {
+            console.error("Le fichier PDF n'est pas accessible:", response.status);
+            toast({
+              variant: "destructive",
+              title: "Erreur",
+              description: "Le fichier PDF n'est pas accessible pour le moment",
+            });
+          }
           return;
         }
 
