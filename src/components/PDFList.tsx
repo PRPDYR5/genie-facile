@@ -24,6 +24,8 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         // Si c'est le cours de math en terminale
         if (level === 'terminale' && subject === 'math') {
           console.log("Chargement du PDF de mathématiques depuis le bucket pdfs");
+          
+          // Construire l'URL directement
           const { data: { publicUrl } } = supabase.storage
             .from('pdfs')
             .getPublicUrl('TERMINAL/cours_math_terminale_f3.pdf');
@@ -31,16 +33,21 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
           console.log("URL du PDF générée:", publicUrl);
           
           // Vérifier si le fichier existe
-          const response = await fetch(publicUrl, { method: 'HEAD' });
-          console.log("Statut de la réponse:", response.status);
-          
-          if (response.ok) {
-            setPdfs([{
-              name: 'Cours Math Terminale F3',
-              url: publicUrl
-            }]);
-          } else {
-            console.error("Le fichier PDF n'est pas accessible:", response.status);
+          try {
+            const response = await fetch(publicUrl, { method: 'HEAD' });
+            console.log("Statut de la réponse:", response.status);
+            
+            if (response.ok) {
+              setPdfs([{
+                name: 'Cours Math Terminale F3',
+                url: publicUrl
+              }]);
+              console.log("PDF ajouté à la liste avec succès");
+            } else {
+              throw new Error(`Statut de réponse: ${response.status}`);
+            }
+          } catch (error) {
+            console.error("Erreur lors de la vérification du PDF:", error);
             toast({
               variant: "destructive",
               title: "Erreur",
