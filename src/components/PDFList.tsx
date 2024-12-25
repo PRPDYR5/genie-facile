@@ -21,7 +21,7 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
       try {
         console.log("Chargement des PDFs pour:", level, subject);
         
-        // Si c'est le cours de math en terminale, on ajoute directement le PDF
+        // Si c'est le cours de math en terminale
         if (level === 'terminale' && subject === 'math') {
           console.log("Chargement du PDF de mathématiques depuis le bucket pdfs");
           const { data: { publicUrl } } = supabase.storage
