@@ -25,64 +25,66 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         if (level === 'terminale' && subject === 'math') {
           console.log("Chargement du PDF de mathématiques depuis le bucket pdfs");
           
-          // Construire l'URL directement
+          const filePath = 'TERMINAL/cours_math_terminale_f3.pdf';
+          
+          // Vérifier si le fichier existe dans le bucket
+          const { data: fileExists, error: fileCheckError } = await supabase.storage
+            .from('pdfs')
+            .list('TERMINAL', {
+              search: 'cours_math_terminale_f3.pdf'
+            });
+
+          if (fileCheckError) {
+            console.error("Erreur lors de la vérification du fichier:", fileCheckError);
+            throw fileCheckError;
+          }
+
+          if (!fileExists || fileExists.length === 0) {
+            console.error("Le fichier n'existe pas dans le bucket");
+            throw new Error("Le fichier PDF n'existe pas dans le bucket");
+          }
+
+          // Obtenir l'URL publique
           const { data: { publicUrl } } = supabase.storage
             .from('pdfs')
-            .getPublicUrl('TERMINAL/cours_math_terminale_f3.pdf');
+            .getPublicUrl(filePath);
 
           console.log("URL du PDF générée:", publicUrl);
           
-          // Vérifier si le fichier existe
-          try {
-            const response = await fetch(publicUrl, { method: 'HEAD' });
-            console.log("Statut de la réponse:", response.status);
-            
-            if (response.ok) {
-              setPdfs([{
-                name: 'Cours Math Terminale F3',
-                url: publicUrl
-              }]);
-              console.log("PDF ajouté à la liste avec succès");
-            } else {
-              throw new Error(`Statut de réponse: ${response.status}`);
-            }
-          } catch (error) {
-            console.error("Erreur lors de la vérification du PDF:", error);
-            toast({
-              variant: "destructive",
-              title: "Erreur",
-              description: "Le fichier PDF n'est pas accessible pour le moment",
-            });
+          setPdfs([{
+            name: 'Cours Math Terminale F3',
+            url: publicUrl
+          }]);
+          
+          console.log("PDF ajouté à la liste avec succès");
+        } else {
+          // Pour les autres matières, on liste le contenu du dossier
+          const { data, error } = await supabase.storage
+            .from('pdfs')
+            .list(`${level.toUpperCase()}`);
+
+          if (error) {
+            throw error;
           }
-          return;
-        }
 
-        // Pour les autres matières, on liste le contenu du dossier
-        const { data, error } = await supabase.storage
-          .from('pdfs')
-          .list(`${level.toUpperCase()}`);
+          if (data) {
+            const pdfFiles = await Promise.all(
+              data
+                .filter(file => file.name.endsWith('.pdf'))
+                .map(async file => {
+                  const { data: { publicUrl } } = supabase.storage
+                    .from('pdfs')
+                    .getPublicUrl(`${level.toUpperCase()}/${file.name}`);
 
-        if (error) {
-          throw error;
-        }
+                  return {
+                    name: file.name.replace('.pdf', ''),
+                    url: publicUrl
+                  };
+                })
+            );
 
-        if (data) {
-          const pdfFiles = await Promise.all(
-            data
-              .filter(file => file.name.endsWith('.pdf'))
-              .map(async file => {
-                const { data: { publicUrl } } = supabase.storage
-                  .from('pdfs')
-                  .getPublicUrl(`${level.toUpperCase()}/${file.name}`);
-
-                return {
-                  name: file.name.replace('.pdf', ''),
-                  url: publicUrl
-                };
-              })
-          );
-
-          setPdfs(pdfFiles);
+            setPdfs(pdfFiles);
+          }
         }
       } catch (error) {
         console.error("Erreur lors du chargement des PDFs:", error);
