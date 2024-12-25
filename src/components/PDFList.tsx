@@ -23,10 +23,13 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         
         // Si c'est le cours de math en terminale, on ajoute directement le PDF
         if (level === 'terminale' && subject === 'math') {
+          console.log("Chargement du PDF de mathématiques depuis le bucket pdfs");
           const { data: { publicUrl } } = supabase.storage
-            .from('terminale')
-            .getPublicUrl('math/cours_math_terminale_f3.pdf');
+            .from('pdfs')
+            .getPublicUrl('TERMINAL/cours_math_terminale_f3.pdf');
 
+          console.log("URL du PDF générée:", publicUrl);
+          
           setPdfs([{
             name: 'Cours Math Terminale F3',
             url: publicUrl
@@ -36,8 +39,8 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
 
         // Pour les autres matières, on liste le contenu du dossier
         const { data, error } = await supabase.storage
-          .from(level)
-          .list(`${subject}`);
+          .from('pdfs')
+          .list(`${level}`);
 
         if (error) {
           throw error;
@@ -49,8 +52,8 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
               .filter(file => file.name.endsWith('.pdf'))
               .map(async file => {
                 const { data: { publicUrl } } = supabase.storage
-                  .from(level)
-                  .getPublicUrl(`${subject}/${file.name}`);
+                  .from('pdfs')
+                  .getPublicUrl(`${level}/${file.name}`);
 
                 return {
                   name: file.name.replace('.pdf', ''),
