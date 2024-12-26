@@ -23,40 +23,23 @@ export function PDFList({ level, subject, onSelect }: PDFListProps) {
         
         // Si c'est le cours de math en terminale
         if (level === 'terminale' && subject === 'math') {
-          console.log("Chargement du PDF de mathématiques depuis le bucket pdfs");
+          console.log("Chargement du PDF de mathématiques depuis Google Drive");
           
-          const filePath = 'TERMINAL/cours_math_terminale_f3.pdf';
-          
-          // Vérifier si le fichier existe dans le bucket
-          const { data: fileExists, error: fileCheckError } = await supabase.storage
-            .from('pdfs')
-            .list('TERMINAL', {
-              search: 'cours_math_terminale_f3.pdf'
-            });
-
-          if (fileCheckError) {
-            console.error("Erreur lors de la vérification du fichier:", fileCheckError);
-            throw fileCheckError;
-          }
-
-          if (!fileExists || fileExists.length === 0) {
-            console.error("Le fichier n'existe pas dans le bucket");
-            throw new Error("Le fichier PDF n'existe pas dans le bucket");
-          }
-
-          // Obtenir l'URL publique
-          const { data: { publicUrl } } = supabase.storage
-            .from('pdfs')
-            .getPublicUrl(filePath);
-
-          console.log("URL du PDF générée:", publicUrl);
+          // URL Google Drive du PDF mathématiques
+          const mathPDFUrl = 'https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing';
           
           setPdfs([{
             name: 'Cours Math Terminale F3',
-            url: publicUrl
+            url: mathPDFUrl
           }]);
           
           console.log("PDF ajouté à la liste avec succès");
+          
+          // Notification de succès
+          toast({
+            title: "PDF chargé",
+            description: "Le cours de mathématiques est prêt à être consulté",
+          });
         } else {
           // Pour les autres matières, on liste le contenu du dossier
           const { data, error } = await supabase.storage
