@@ -13,7 +13,7 @@ export function PDFViewer({ url }: PDFViewerProps) {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const initPDFViewer = async () => {
+    const initPDFViewer = () => {
       try {
         if (!url) {
           setLoading(false);
@@ -60,6 +60,7 @@ export function PDFViewer({ url }: PDFViewerProps) {
           className="w-full h-full"
           title="PDF Viewer"
           allowFullScreen
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
         />
       )}
     </div>

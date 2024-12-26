@@ -10,6 +10,8 @@ const subjects = {
   math: "Mathématiques",
 };
 
+const MATH_PDF_URL = "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing";
+
 export default function Courses() {
   const [selectedLevel, setSelectedLevel] = useState("terminale");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -17,17 +19,11 @@ export default function Courses() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  console.log("Selected level:", selectedLevel);
-  console.log("Selected subject:", selectedSubject);
-  console.log("Selected PDF:", selectedPDF);
-
   const handleMathSelection = () => {
     try {
       console.log("Chargement du PDF de mathématiques...");
-      const mathPDFUrl = 'https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing';
-      
       setSelectedSubject("math");
-      setSelectedPDF(mathPDFUrl);
+      setSelectedPDF(MATH_PDF_URL);
       
       toast({
         title: "PDF chargé",
@@ -76,14 +72,12 @@ export default function Courses() {
               ))}
             </div>
 
-            {selectedSubject && (
+            {selectedPDF && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4 text-[#9b87f5]">
                   Document pour {subjects[selectedSubject]}
                 </h2>
-                <div className="w-full">
-                  <PDFViewer url={selectedPDF} />
-                </div>
+                <PDFViewer url={selectedPDF} />
               </div>
             )}
           </TabsContent>
