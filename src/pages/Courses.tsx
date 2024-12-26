@@ -1,11 +1,9 @@
 import { Layout } from "@/components/Layout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader } from "@/components/ui/card";
-import { PDFList } from "@/components/PDFList";
 import { PDFViewer } from "@/components/PDFViewer";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const subjects = {

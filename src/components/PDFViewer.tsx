@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { convertGoogleDriveUrl } from "@/utils/pdfUtils";
 
 interface PDFViewerProps {
   url: string;
@@ -8,27 +9,31 @@ interface PDFViewerProps {
 export function PDFViewer({ url }: PDFViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [embedUrl, setEmbedUrl] = useState<string>("");
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const checkPDFAvailability = async () => {
+    const initPDFViewer = async () => {
       try {
-        console.log("Vérification de la disponibilité du PDF:", url);
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Le cours n'est pas encore disponible");
+        if (!url) {
+          setLoading(false);
+          return;
         }
+
+        console.log("URL d'origine:", url);
+        const convertedUrl = convertGoogleDriveUrl(url);
+        console.log("URL convertie:", convertedUrl);
+        setEmbedUrl(convertedUrl);
         setLoading(false);
+        setError(null);
       } catch (err) {
-        console.error("Erreur lors du chargement du PDF:", err);
-        setError("Le cours n'est pas encore disponible");
+        console.error("Erreur lors de l'initialisation du viewer:", err);
+        setError("Impossible de charger le PDF");
         setLoading(false);
       }
     };
 
-    if (url) {
-      checkPDFAvailability();
-    }
+    initPDFViewer();
   }, [url]);
 
   if (!url) {
@@ -51,9 +56,10 @@ export function PDFViewer({ url }: PDFViewerProps) {
         </div>
       ) : (
         <iframe
-          src={url}
+          src={embedUrl}
           className="w-full h-full"
           title="PDF Viewer"
+          allowFullScreen
         />
       )}
     </div>
