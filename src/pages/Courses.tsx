@@ -6,11 +6,50 @@ import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 
-const subjects = {
-  math: "Mathématiques",
+const courses = {
+  seconde: {
+    math: {
+      name: "Mathématiques",
+      url: null
+    },
+    physics: {
+      name: "Sciences Physiques",
+      url: null
+    },
+    info: {
+      name: "Informatique",
+      url: null
+    }
+  },
+  premiere: {
+    math: {
+      name: "Mathématiques",
+      url: "https://drive.google.com/file/d/1e7pV0w9cUvz4sEzrVQuvQjpljLOEjvQE/view?usp=sharing"
+    },
+    physics: {
+      name: "Sciences Physiques",
+      url: "https://drive.google.com/file/d/1eAYwN6aok-KtenwNjrPh1Ys2NErswDC9/view?usp=sharing"
+    },
+    info: {
+      name: "Informatique",
+      url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing"
+    }
+  },
+  terminale: {
+    math: {
+      name: "Mathématiques",
+      url: "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing"
+    },
+    physics: {
+      name: "Sciences Physiques",
+      url: "https://drive.google.com/file/d/1wki9fTD9_ur9rhtuxgKUI3Xlwg78Wzeo/view?usp=sharing"
+    },
+    info: {
+      name: "Informatique",
+      url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing"
+    }
+  }
 };
-
-const MATH_PDF_URL = "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing";
 
 export default function Courses() {
   const [selectedLevel, setSelectedLevel] = useState("terminale");
@@ -19,22 +58,33 @@ export default function Courses() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  const handleMathSelection = () => {
+  const handleCourseSelection = (level: string, subject: string) => {
     try {
-      console.log("Chargement du PDF de mathématiques...");
-      setSelectedSubject("math");
-      setSelectedPDF(MATH_PDF_URL);
+      console.log(`Chargement du cours de ${subject} pour le niveau ${level}...`);
+      const course = courses[level as keyof typeof courses][subject as "math" | "physics" | "info"];
+      
+      if (!course.url) {
+        toast({
+          variant: "destructive",
+          title: "Cours non disponible",
+          description: "Ce cours n'est pas encore disponible.",
+        });
+        return;
+      }
+
+      setSelectedSubject(subject);
+      setSelectedPDF(course.url);
       
       toast({
-        title: "PDF chargé",
-        description: "Le cours de mathématiques est prêt à être consulté",
+        title: "Cours chargé",
+        description: `Le cours de ${course.name} est prêt à être consulté`,
       });
     } catch (error) {
-      console.error("Erreur lors du chargement du PDF:", error);
+      console.error("Erreur lors du chargement du cours:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Impossible de charger le PDF de mathématiques",
+        description: "Impossible de charger le cours",
       });
     }
   };
@@ -46,7 +96,7 @@ export default function Courses() {
           Cours PDF
         </h1>
         
-        <Tabs defaultValue="terminale" onValueChange={setSelectedLevel} className="w-full">
+        <Tabs value={selectedLevel} onValueChange={setSelectedLevel} className="w-full">
           <TabsList className={`grid w-full grid-cols-3 ${isMobile ? 'text-sm' : ''}`}>
             <TabsTrigger value="seconde">Seconde</TabsTrigger>
             <TabsTrigger value="premiere">Première</TabsTrigger>
@@ -55,17 +105,18 @@ export default function Courses() {
 
           <TabsContent value={selectedLevel} className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(subjects).map(([key, value]) => (
+              {Object.entries(courses[selectedLevel as keyof typeof courses]).map(([key, course]) => (
                 <Card
                   key={key}
                   className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer hover:scale-105 ${
                     selectedSubject === key ? 'border-2 border-[#9b87f5]' : ''
-                  } ${isMobile ? 'p-2' : 'p-4'}`}
-                  onClick={handleMathSelection}
+                  } ${!course.url ? 'opacity-50' : ''} ${isMobile ? 'p-2' : 'p-4'}`}
+                  onClick={() => handleCourseSelection(selectedLevel, key)}
                 >
                   <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
                     <div className="flex items-center justify-center gap-3">
-                      <span className="font-medium text-center">{value}</span>
+                      <span className="font-medium text-center">{course.name}</span>
+                      {!course.url && <span className="text-sm text-gray-500">(Bientôt disponible)</span>}
                     </div>
                   </CardHeader>
                 </Card>
@@ -75,7 +126,7 @@ export default function Courses() {
             {selectedPDF && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4 text-[#9b87f5]">
-                  Document pour {subjects[selectedSubject]}
+                  Document pour {courses[selectedLevel as keyof typeof courses][selectedSubject as "math" | "physics" | "info"].name}
                 </h2>
                 <PDFViewer url={selectedPDF} />
               </div>

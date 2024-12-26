@@ -3,28 +3,62 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
-  const [theme, setTheme] = useState("light");
-  const [fontSize, setFontSize] = useState("medium");
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [fontSize, setFontSize] = useState(() => localStorage.getItem("fontSize") || "medium");
   const { toast } = useToast();
 
-  const handleSave = () => {
-    // Sauvegarder les paramètres
-    localStorage.setItem("theme", theme);
-    localStorage.setItem("fontSize", fontSize);
+  useEffect(() => {
+    // Appliquer le thème au chargement
+    document.documentElement.classList.toggle("dark", theme === "dark");
     
-    toast({
-      title: "Paramètres sauvegardés",
-      description: "Vos préférences ont été mises à jour avec succès.",
-    });
+    // Appliquer la taille de police au chargement
+    document.documentElement.style.fontSize = getFontSize(fontSize);
+  }, []);
+
+  const getFontSize = (size: string) => {
+    switch (size) {
+      case "small":
+        return "14px";
+      case "large":
+        return "18px";
+      default:
+        return "16px";
+    }
+  };
+
+  const handleSave = () => {
+    try {
+      // Sauvegarder les paramètres
+      localStorage.setItem("theme", theme);
+      localStorage.setItem("fontSize", fontSize);
+      
+      // Appliquer le thème
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      
+      // Appliquer la taille de police
+      document.documentElement.style.fontSize = getFontSize(fontSize);
+      
+      toast({
+        title: "Paramètres sauvegardés",
+        description: "Vos préférences ont été mises à jour avec succès.",
+      });
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde des paramètres:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de sauvegarder les paramètres",
+      });
+    }
   };
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-8 animate-fade-in">
         <h1 className="text-4xl font-bold gradient-text">Paramètres</h1>
         
         <Card className="glass">

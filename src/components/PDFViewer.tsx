@@ -33,6 +33,7 @@ export function PDFViewer({ url }: PDFViewerProps) {
       }
     };
 
+    setLoading(true);
     initPDFViewer();
   }, [url]);
 
