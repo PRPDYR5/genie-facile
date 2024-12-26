@@ -6,6 +6,7 @@ import { PDFViewer } from "@/components/PDFViewer";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const subjects = {
   math: "Mathématiques",
@@ -16,25 +17,31 @@ export default function Courses() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedPDF, setSelectedPDF] = useState("");
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   console.log("Selected level:", selectedLevel);
   console.log("Selected subject:", selectedSubject);
   console.log("Selected PDF:", selectedPDF);
 
-  const handleMathSelection = async () => {
+  const handleMathSelection = () => {
     try {
-      if (selectedLevel === "terminale") {
-        console.log("Chargement du PDF de mathématiques Terminale...");
-        const { data: { publicUrl } } = supabase.storage
-          .from('terminale')
-          .getPublicUrl('math/cours_math_terminale_f3.pdf');
-        
-        console.log("URL du PDF:", publicUrl);
-        setSelectedSubject("math");
-        setSelectedPDF(publicUrl);
-      }
+      console.log("Chargement du PDF de mathématiques...");
+      const mathPDFUrl = 'https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing';
+      
+      setSelectedSubject("math");
+      setSelectedPDF(mathPDFUrl);
+      
+      toast({
+        title: "PDF chargé",
+        description: "Le cours de mathématiques est prêt à être consulté",
+      });
     } catch (error) {
       console.error("Erreur lors du chargement du PDF:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger le PDF de mathématiques",
+      });
     }
   };
 
@@ -74,19 +81,10 @@ export default function Courses() {
             {selectedSubject && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4 text-[#9b87f5]">
-                  Documents disponibles pour {subjects[selectedSubject]}
+                  Document pour {subjects[selectedSubject]}
                 </h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <PDFList
-                      level={selectedLevel}
-                      subject={selectedSubject}
-                      onSelect={setSelectedPDF}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <PDFViewer url={selectedPDF} />
-                  </div>
+                <div className="w-full">
+                  <PDFViewer url={selectedPDF} />
                 </div>
               </div>
             )}
