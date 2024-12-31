@@ -9,7 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      qa_history: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          level: Database["public"]["Enums"]["education_level"]
+          pdf_source: string
+          question: string
+          subject: Database["public"]["Enums"]["subject_type"]
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          level: Database["public"]["Enums"]["education_level"]
+          pdf_source: string
+          question: string
+          subject: Database["public"]["Enums"]["subject_type"]
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["education_level"]
+          pdf_source?: string
+          question?: string
+          subject?: Database["public"]["Enums"]["subject_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +47,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      education_level: "seconde" | "premiere" | "terminale"
+      subject_type: "math" | "physics" | "info"
     }
     CompositeTypes: {
       [_ in never]: never
