@@ -2,9 +2,10 @@ import { Layout } from "@/components/Layout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader } from "@/components/ui/card";
 import { PDFViewer } from "@/components/PDFViewer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
 const courses = {
   seconde: {
@@ -52,11 +53,35 @@ const courses = {
 };
 
 export default function Courses() {
-  const [selectedLevel, setSelectedLevel] = useState("terminale");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedPDF, setSelectedPDF] = useState("");
+  const [searchParams] = useSearchParams();
+  const initialLevel = searchParams.get("level") || "terminale";
+  const initialSubject = searchParams.get("subject") || "";
+  const pdfUrl = searchParams.get("pdf");
+
+  const [selectedLevel, setSelectedLevel] = useState(initialLevel);
+  const [selectedSubject, setSelectedSubject] = useState(initialSubject);
+  const [selectedPDF, setSelectedPDF] = useState(pdfUrl || "");
   const isMobile = useIsMobile();
   const { toast } = useToast();
+
+  // Effect to handle URL parameters
+  useEffect(() => {
+    if (pdfUrl) {
+      setSelectedPDF(decodeURIComponent(pdfUrl));
+      
+      // Find the corresponding subject if not provided
+      if (!initialSubject && selectedLevel) {
+        const level = courses[selectedLevel as keyof typeof courses];
+        if (level) {
+          Object.entries(level).forEach(([subject, data]) => {
+            if (data.url === decodeURIComponent(pdfUrl)) {
+              setSelectedSubject(subject);
+            }
+          });
+        }
+      }
+    }
+  }, [pdfUrl, initialSubject, selectedLevel]);
 
   const handleCourseSelection = (level: string, subject: string) => {
     try {

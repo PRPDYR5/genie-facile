@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Command,
   CommandDialog,
@@ -56,6 +56,7 @@ export function SearchBar() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   // Fonction pour transformer les données des cours en format plat pour la recherche
   const getAllCourses = () => {
@@ -96,8 +97,8 @@ export function SearchBar() {
     console.log("Cours sélectionné:", course);
     setOpen(false);
     
-    // Redirection vers la page des cours avec les bons paramètres
-    navigate(`/courses?level=${course.level}&subject=${course.subject}`);
+    // Redirection vers la page des cours avec les bons paramètres et l'URL du PDF
+    navigate(`/courses?level=${course.level}&subject=${course.subject}&pdf=${encodeURIComponent(course.url)}`);
     
     toast({
       title: "Cours trouvé",
