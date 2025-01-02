@@ -15,19 +15,30 @@ serve(async (req) => {
   }
 
   try {
+    // Check if API key is set
+    if (!PERPLEXITY_API_KEY) {
+      console.error('PERPLEXITY_API_KEY is not set')
+      throw new Error('PERPLEXITY_API_KEY is not set')
+    }
+
     const { question, level, subject } = await req.json()
     console.log(`Processing question for ${level} ${subject}:`, question)
 
-    // Récupérer l'URL du PDF correspondant
+    // Get PDF URL
     const pdfUrl = getPdfUrl(level, subject)
     console.log("URL du PDF:", pdfUrl)
 
-    // Construire le prompt pour Perplexity
+    if (!pdfUrl) {
+      console.error('No PDF URL found for', { level, subject })
+      throw new Error(`No PDF available for ${level} ${subject}`)
+    }
+
+    // Build prompt for Perplexity
     const prompt = `En tant que professeur de ${subject} niveau ${level}, réponds à cette question: "${question}". 
     Utilise le contenu du cours disponible à ${pdfUrl} pour formuler ta réponse.
     Sois précis et pédagogique dans ta réponse.`
 
-    // Appeler l'API Perplexity
+    console.log("Sending request to Perplexity API")
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
@@ -51,10 +62,16 @@ serve(async (req) => {
       }),
     })
 
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Perplexity API error:', errorText)
+      throw new Error(`Perplexity API error: ${response.status}`)
+    }
+
     const data = await response.json()
     const answer = data.choices[0].message.content
 
-    console.log("Réponse générée:", answer)
+    console.log("Generated answer:", answer)
 
     return new Response(
       JSON.stringify({ 
@@ -66,9 +83,11 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error("Erreur lors du traitement de la question:", error)
+    console.error("Error processing question:", error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message || 'An error occurred processing your question'
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
