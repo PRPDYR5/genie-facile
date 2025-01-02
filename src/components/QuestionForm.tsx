@@ -51,14 +51,16 @@ export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitt
 
       const { answer, pdfSource } = response
 
-      // Sauvegarder dans l'historique
-      const { error: insertError } = await supabase.from('qa_history').insert({
-        question: userQuestion,
-        answer,
-        level: selectedLevel,
-        subject: selectedSubject,
-        pdf_source: pdfSource
-      })
+      // Insert into qa_history table with proper typing
+      const { error: insertError } = await supabase
+        .from('qa_history')
+        .insert([{  // Wrap the object in an array
+          question: userQuestion,
+          answer,
+          level: selectedLevel as "seconde" | "premiere" | "terminale",
+          subject: selectedSubject as "math" | "physics" | "info",
+          pdf_source: pdfSource
+        }])
 
       if (insertError) throw insertError
 
