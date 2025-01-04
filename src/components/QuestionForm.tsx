@@ -37,29 +37,31 @@ export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitt
 
     setIsLoading(true)
     try {
-      console.log("Envoi de la question:", userQuestion)
+      console.log("Envoi de la question au bot Poe:", userQuestion)
       
-      const { data: response, error: functionError } = await supabase.functions.invoke('process-pdf-question', {
+      // Call the Poe bot through Edge Function
+      const { data: response, error: functionError } = await supabase.functions.invoke('process-poe-question', {
         body: {
           question: userQuestion,
           level: selectedLevel,
-          subject: selectedSubject
+          subject: selectedSubject,
+          botId: "Genie05-Bot"
         }
       })
 
       if (functionError) throw functionError
 
-      const { answer, pdfSource } = response
+      const { answer } = response
 
-      // Insert into qa_history table with proper typing
+      // Insert into qa_history table
       const { error: insertError } = await supabase
         .from('qa_history')
-        .insert([{  // Wrap the object in an array
+        .insert([{
           question: userQuestion,
           answer,
           level: selectedLevel as "seconde" | "premiere" | "terminale",
           subject: selectedSubject as "math" | "physics" | "info",
-          pdf_source: pdfSource
+          pdf_source: "poe-bot" // Indicating the source is the Poe bot
         }])
 
       if (insertError) throw insertError
