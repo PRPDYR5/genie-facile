@@ -7,21 +7,24 @@ import { QuestionForm } from "@/components/QuestionForm"
 import { QuestionHistory } from "@/components/QuestionHistory"
 import { PoeChat } from "@/components/PoeChat"
 
+type Level = "seconde" | "premiere" | "terminale"
+type Subject = "math" | "physics" | "info"
+
 const QA = () => {
-  const [selectedLevel, setSelectedLevel] = useState("")
-  const [selectedSubject, setSelectedSubject] = useState("")
+  const [selectedLevel, setSelectedLevel] = useState<Level | "">("")
+  const [selectedSubject, setSelectedSubject] = useState<Subject | "">("")
   const [qaHistory, setQaHistory] = useState<any[]>([])
 
   const levels = [
-    { value: "seconde", label: "Seconde" },
-    { value: "premiere", label: "Première" },
-    { value: "terminale", label: "Terminale" }
+    { value: "seconde" as Level, label: "Seconde" },
+    { value: "premiere" as Level, label: "Première" },
+    { value: "terminale" as Level, label: "Terminale" }
   ]
 
   const subjects = [
-    { value: "math", label: "Mathématiques" },
-    { value: "physics", label: "Sciences Physiques" },
-    { value: "info", label: "Informatique" }
+    { value: "math" as Subject, label: "Mathématiques" },
+    { value: "physics" as Subject, label: "Sciences Physiques" },
+    { value: "info" as Subject, label: "Informatique" }
   ]
 
   const loadQAHistory = async () => {
@@ -63,7 +66,7 @@ const QA = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm text-[#9b87f5]">Niveau</label>
-            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+            <Select value={selectedLevel} onValueChange={(value: Level) => setSelectedLevel(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Choisir un niveau" />
               </SelectTrigger>
@@ -79,7 +82,7 @@ const QA = () => {
 
           <div className="space-y-2">
             <label className="text-sm text-[#9b87f5]">Matière</label>
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+            <Select value={selectedSubject} onValueChange={(value: Subject) => setSelectedSubject(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Choisir une matière" />
               </SelectTrigger>
