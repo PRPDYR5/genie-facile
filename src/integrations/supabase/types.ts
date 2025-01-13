@@ -39,6 +39,75 @@ export type Database = {
         }
         Relationships: []
       }
+      study_schedules: {
+        Row: {
+          created_at: string
+          end_time: string
+          id: string
+          level: string
+          notification_enabled: boolean | null
+          start_time: string
+          subject: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_time: string
+          id?: string
+          level: string
+          notification_enabled?: boolean | null
+          start_time: string
+          subject: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_time?: string
+          id?: string
+          level?: string
+          notification_enabled?: boolean | null
+          start_time?: string
+          subject?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          focus_mode: boolean
+          font_size: string
+          id: string
+          language: Database["public"]["Enums"]["supported_language"]
+          theme: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          focus_mode?: boolean
+          font_size?: string
+          id?: string
+          language?: Database["public"]["Enums"]["supported_language"]
+          theme?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          focus_mode?: boolean
+          font_size?: string
+          id?: string
+          language?: Database["public"]["Enums"]["supported_language"]
+          theme?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -49,6 +118,7 @@ export type Database = {
     Enums: {
       education_level: "seconde" | "premiere" | "terminale"
       subject_type: "math" | "physics" | "info"
+      supported_language: "fr" | "en"
     }
     CompositeTypes: {
       [_ in never]: never
