@@ -1,9 +1,17 @@
 import { useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ExternalLink } from "lucide-react"
 
 export function PoeChat() {
   const [isOpen, setIsOpen] = useState(false)
+  const POE_CHAT_URL = "https://poe.com/chat/30lry84uvjiduoa6eti"
+
+  const handleOpenChat = () => {
+    window.open(POE_CHAT_URL, '_blank', 'noopener,noreferrer')
+    setIsOpen(false)
+  }
 
   return (
     <div className="flex justify-end mb-4">
@@ -19,12 +27,21 @@ export function PoeChat() {
       </Card>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <iframe
-            src="https://poe.com/chat/30lry84uvjiduoa6eti"
-            className="w-full h-full border-none"
-            title="Poe Chat"
-          />
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ouvrir le chat Poe</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            <p className="text-center text-muted-foreground">
+              Pour accéder au chat Poe, cliquez sur le bouton ci-dessous. Le chat s'ouvrira dans un nouvel onglet.
+            </p>
+            <Button 
+              onClick={handleOpenChat}
+              className="flex items-center gap-2"
+            >
+              Ouvrir le chat <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
