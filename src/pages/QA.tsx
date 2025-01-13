@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { QuestionForm } from "@/components/QuestionForm"
 import { QuestionHistory } from "@/components/QuestionHistory"
+import { PoeChat } from "@/components/PoeChat"
 
 const QA = () => {
   const [selectedLevel, setSelectedLevel] = useState("")
@@ -93,13 +94,20 @@ const QA = () => {
           </div>
         </div>
 
-        <Card className="p-6 glass">
-          <QuestionForm
-            selectedLevel={selectedLevel}
-            selectedSubject={selectedSubject}
-            onQuestionSubmitted={loadQAHistory}
-          />
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <Card className="p-6 glass">
+              <QuestionForm
+                selectedLevel={selectedLevel}
+                selectedSubject={selectedSubject}
+                onQuestionSubmitted={loadQAHistory}
+              />
+            </Card>
+          </div>
+          <div className="md:col-span-1">
+            <PoeChat />
+          </div>
+        </div>
 
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-[#9b87f5]">
