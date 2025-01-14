@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Search, Settings } from "lucide-react";
+import { FileText, Search, Settings, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function UserDashboard() {
@@ -11,6 +11,12 @@ export function UserDashboard() {
       icon: FileText,
       description: "Accédez à tous vos cours et documents",
       onClick: () => navigate("/courses")
+    },
+    {
+      title: "Exercices",
+      icon: GraduationCap,
+      description: "Pratiquez avec des exercices adaptés",
+      onClick: () => navigate("/courses/exercises")
     },
     {
       title: "Recherche avancée",
@@ -27,7 +33,7 @@ export function UserDashboard() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {dashboardItems.map((item) => (
         <div
           key={item.title}

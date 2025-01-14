@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Home, BookOpen, Search, Settings, LogIn, LogOut } from "lucide-react";
+import { Home, BookOpen, Search, Settings, LogIn, LogOut, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,12 @@ export function AppSidebar() {
               <Button variant="ghost" className="w-full justify-start">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Cours
+              </Button>
+            </Link>
+            <Link to="/courses/exercises">
+              <Button variant="ghost" className="w-full justify-start">
+                <GraduationCap className="mr-2 h-4 w-4" />
+                Exercices
               </Button>
             </Link>
             <Link to="/search">
