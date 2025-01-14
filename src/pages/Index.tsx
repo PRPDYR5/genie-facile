@@ -1,6 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
+import { StudyScheduleList } from "@/components/StudyScheduleList";
 
 const Index = () => {
   console.log("Rendering Index page");
@@ -36,6 +37,7 @@ const Index = () => {
         <div className="space-y-6 sm:space-y-8 px-2">
           <UserDashboard />
           <StudyScheduler />
+          <StudyScheduleList />
         </div>
       </div>
     </Layout>
