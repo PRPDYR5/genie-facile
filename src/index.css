@@ -1,92 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --background: 260 25% 11%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 260 25% 11%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 260 25% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 252 96% 85%;
-    --primary-foreground: 260 25% 11%;
-
-    --secondary: 260 25% 25%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 260 25% 25%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 252 96% 85%;
-    --accent-foreground: 260 25% 11%;
-
-    --destructive: 0 62.8% 30.6%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 260 25% 25%;
-    --input: 260 25% 25%;
-    --ring: 252 96% 85%;
-
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
     --radius: 0.5rem;
   }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-[#1A1F2C] text-foreground font-roboto min-h-screen;
-    background-image: 
-      linear-gradient(to bottom right, rgba(26, 31, 44, 0.9), rgba(110, 89, 165, 0.8)),
-      url('/lovable-uploads/6e0cdbca-0fdc-4d34-9eb2-43fc29dca121.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    @apply bg-background text-foreground;
   }
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-poppins;
-  }
+.focus-mode {
+  @apply pointer-events-none select-none;
+}
+
+.focus-mode button:not([data-focus-allowed="true"]),
+.focus-mode a:not([data-focus-allowed="true"]) {
+  @apply opacity-50 cursor-not-allowed;
 }
 
 .glass {
-  background: rgba(155, 135, 245, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(155, 135, 245, 0.1);
+  @apply bg-white/10 backdrop-blur-lg border border-white/20;
+}
+
+.dark .glass {
+  @apply bg-black/10 border-black/20;
 }
 
 .gradient-text {
-  background: linear-gradient(to right, #9b87f5, #6E59A5);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px -5px rgba(155, 135, 245, 0.3);
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#6f4cff];
 }

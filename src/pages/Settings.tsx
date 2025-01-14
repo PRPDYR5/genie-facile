@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 type UserPreferences = {
   theme: string;
@@ -24,15 +25,24 @@ export default function Settings() {
   });
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadUserPreferences();
   }, []);
 
+  // Appliquer les préférences dès qu'elles changent
+  useEffect(() => {
+    applyPreferences(preferences);
+  }, [preferences]);
+
   const loadUserPreferences = async () => {
     try {
+      console.log("Loading user preferences...");
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
+        console.error("No user found");
         toast({
           variant: "destructive",
           title: "Erreur",
@@ -41,9 +51,11 @@ export default function Settings() {
         return;
       }
 
+      console.log("User found, fetching preferences...");
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
+        .eq('user_id', user.id)
         .single();
 
       if (error) {
@@ -52,8 +64,18 @@ export default function Settings() {
       }
 
       if (data) {
+        console.log("Preferences loaded:", data);
         setPreferences(data);
         applyPreferences(data);
+      } else {
+        // Si aucune préférence n'existe, créer des préférences par défaut
+        const defaultPreferences = {
+          theme: 'light',
+          font_size: 'medium',
+          language: 'fr' as const,
+          focus_mode: false
+        };
+        await handleSave(defaultPreferences);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -63,20 +85,30 @@ export default function Settings() {
   };
 
   const applyPreferences = (prefs: UserPreferences) => {
+    console.log("Applying preferences:", prefs);
+    
     // Appliquer le thème
-    document.documentElement.classList.toggle('dark', prefs.theme === 'dark');
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(prefs.theme);
     
     // Appliquer la taille de police
-    document.documentElement.style.fontSize = getFontSize(prefs.font_size);
+    const fontSize = getFontSize(prefs.font_size);
+    document.documentElement.style.fontSize = fontSize;
+    document.body.style.fontSize = fontSize;
+    
+    // Appliquer la langue
+    document.documentElement.lang = prefs.language;
     
     // Appliquer le mode focus
     if (prefs.focus_mode) {
-      // Désactiver les notifications
-      console.log('Focus mode enabled - notifications disabled');
+      console.log('Focus mode enabled');
+      document.body.classList.add('focus-mode');
+    } else {
+      document.body.classList.remove('focus-mode');
     }
   };
 
-  const getFontSize = (size: string) => {
+  const getFontSize = (size: string): string => {
     switch (size) {
       case 'small':
         return '14px';
@@ -87,22 +119,36 @@ export default function Settings() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (prefsToSave = preferences) => {
     try {
+      setSaving(true);
+      console.log("Saving preferences:", prefsToSave);
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        console.error("No user found during save");
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Vous devez être connecté pour sauvegarder les paramètres",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('user_preferences')
         .upsert({
           user_id: user.id,
-          ...preferences
+          ...prefsToSave,
+          updated_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving preferences:', error);
+        throw error;
+      }
 
-      applyPreferences(preferences);
-      
+      console.log("Preferences saved successfully");
       toast({
         title: "Paramètres sauvegardés",
         description: "Vos préférences ont été mises à jour avec succès.",
@@ -114,13 +160,17 @@ export default function Settings() {
         title: "Erreur",
         description: "Impossible de sauvegarder les paramètres",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
   if (loading) {
     return (
       <Layout>
-        <div>Chargement...</div>
+        <div className="flex items-center justify-center h-full">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
       </Layout>
     );
   }
@@ -219,10 +269,18 @@ export default function Settings() {
         </Card>
 
         <Button 
-          onClick={handleSave}
+          onClick={() => handleSave()}
+          disabled={saving}
           className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-white"
         >
-          Sauvegarder les paramètres
+          {saving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Sauvegarde en cours...
+            </>
+          ) : (
+            'Sauvegarder les paramètres'
+          )}
         </Button>
       </div>
     </Layout>
