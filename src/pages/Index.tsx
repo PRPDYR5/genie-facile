@@ -1,5 +1,6 @@
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
+import { StudyScheduler } from "@/components/StudyScheduler";
 
 const Index = () => {
   console.log("Rendering Index page");
@@ -34,6 +35,7 @@ const Index = () => {
         {/* Search and Dashboard Section */}
         <div className="space-y-6 sm:space-y-8 px-2">
           <UserDashboard />
+          <StudyScheduler />
         </div>
       </div>
     </Layout>
