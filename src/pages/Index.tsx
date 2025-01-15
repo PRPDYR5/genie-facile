@@ -1,44 +1,101 @@
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
-import { StudyScheduler } from "@/components/StudyScheduler";
-import { StudyScheduleList } from "@/components/StudyScheduleList";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { toast } from "@/hooks/use-toast";
+import { Eye, EyeOff, Telegram, WhatsApp } from "lucide-react";
+import { Footer } from "@/components/Footer";
+import { HeroSection } from "@/components/HeroSection";
+import { SocialLinks } from "@/components/SocialLinks";
 
 const Index = () => {
-  console.log("Rendering Index page");
-  
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check active session and subscribe to auth changes
+    const checkUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+        setLoading(false);
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  const handleProtectedAction = () => {
+    if (!user) {
+      toast({
+        title: "Accès restreint",
+        description: "Pour accéder à cette fonctionnalité, veuillez vous connecter ou créer un compte.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <div className="space-y-8 sm:space-y-16 animate-fade-in px-2 sm:px-0">
+      <div className="min-h-screen">
         {/* Hero Section */}
-        <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-8 sm:py-16">
-          <h1 className="text-3xl sm:text-6xl font-bold font-poppins gradient-text animate-float">
-            Un apprentissage simplifié, pour un futur brillant
-          </h1>
-          <p className="text-lg sm:text-2xl text-[#9b87f5]/80 font-roboto leading-relaxed px-4">
-            Génie Facile est votre professeur virtuel, prêt à vous accompagner dans vos études techniques de la série F3
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 sm:pt-8 px-4">
-            <a
-              href="/courses/summaries"
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg shadow-lg shadow-[#9b87f5]/20"
-            >
-              Voir les résumés
-            </a>
-            <a
-              href="/courses/qa"
-              className="px-6 py-3 sm:px-8 sm:py-4 bg-[#9b87f5]/10 border border-[#9b87f5]/20 text-[#9b87f5] rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg backdrop-blur-sm"
-            >
-              Questions-réponses
-            </a>
-          </div>
+        <HeroSection user={user} />
+
+        {/* Social Links Section */}
+        <SocialLinks />
+
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-8 space-y-12">
+          {user ? (
+            <UserDashboard />
+          ) : (
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold text-primary">
+                Connectez-vous pour accéder à toutes les fonctionnalités
+              </h2>
+              <div className="flex justify-center gap-4">
+                <Button onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
+                  Se connecter
+                </Button>
+                <Button 
+                  onClick={() => navigate("/auth")} 
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/10"
+                >
+                  Créer un compte
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Search and Dashboard Section */}
-        <div className="space-y-6 sm:space-y-8 px-2">
-          <UserDashboard />
-          <StudyScheduler />
-          <StudyScheduleList />
-        </div>
+        {/* Footer */}
+        <Footer />
       </div>
     </Layout>
   );
