@@ -1,6 +1,5 @@
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,21 +71,9 @@ const Index = () => {
               <h2 className="text-2xl font-bold gradient-text">
                 Connectez-vous pour accéder à toutes les fonctionnalités
               </h2>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button 
-                  onClick={() => navigate("/auth")} 
-                  className="bg-primary hover:bg-primary/90 text-white px-8 py-6"
-                >
-                  Se connecter
-                </Button>
-                <Button 
-                  onClick={() => navigate("/auth")} 
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary/10 px-8 py-6"
-                >
-                  Créer un compte
-                </Button>
-              </div>
+              <p className="text-muted-foreground mb-6">
+                Créez un compte ou connectez-vous pour profiter de toutes les ressources disponibles.
+              </p>
             </div>
           )}
         </div>

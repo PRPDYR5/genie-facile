@@ -1,5 +1,6 @@
 import { MessageCircle, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 export function SocialLinks() {
   const socialLinks = [
@@ -19,6 +20,14 @@ export function SocialLinks() {
     },
   ];
 
+  const handleJoinGroup = (name: string, url: string) => {
+    window.open(url, "_blank");
+    toast({
+      title: `Redirection vers ${name}`,
+      description: "Vous allez être redirigé vers le groupe.",
+    });
+  };
+
   return (
     <div className="bg-gradient-to-r from-primary/5 to-secondary/5 py-12">
       <div className="container mx-auto px-4">
@@ -30,8 +39,8 @@ export function SocialLinks() {
           {socialLinks.map((link) => (
             <Button
               key={link.name}
-              onClick={() => window.open(link.url, "_blank")}
-              className={`${link.color} ${link.hoverColor} text-white px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-fade-in`}
+              onClick={() => handleJoinGroup(link.name, link.url)}
+              className={`${link.color} ${link.hoverColor} text-white px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-fade-in glass`}
             >
               <link.icon className="w-6 h-6 mr-2" />
               {link.name}

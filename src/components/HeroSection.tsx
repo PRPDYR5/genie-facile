@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { AuthButtons } from "./AuthButtons";
 
 interface HeroSectionProps {
   user: User | null;
@@ -21,23 +22,16 @@ export function HeroSection({ user }: HeroSectionProps) {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in">
-          {!user && (
-            <>
-              <Button
-                onClick={() => navigate("/auth")}
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg glass"
-              >
-                Commencer maintenant
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/auth")}
-                className="border-primary text-primary hover:bg-primary/10 px-8 py-6 text-lg glass"
-              >
-                En savoir plus
-              </Button>
-            </>
-          )}
+          {!user && <AuthButtons />}
+        </div>
+
+        <div className="mt-12 glass p-8 rounded-2xl max-w-3xl mx-auto animate-fade-in">
+          <h2 className="text-2xl font-bold mb-6 gradient-text">
+            Rejoignez notre communauté d'apprentissage
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Accédez à des ressources exclusives, participez à des discussions enrichissantes et progressez avec d'autres étudiants.
+          </p>
         </div>
       </div>
 
