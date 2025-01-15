@@ -82,6 +82,6 @@ const Index = () => {
       </div>
     </Layout>
   );
-};
+}
 
 export default Index;
