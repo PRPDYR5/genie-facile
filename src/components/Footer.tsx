@@ -35,14 +35,14 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {footerLinks.map((section) => (
-            <div key={section.title}>
-              <h3 className="font-bold text-lg mb-4 text-primary">{section.title}</h3>
+            <div key={section.title} className="glass p-6 rounded-xl">
+              <h3 className="font-bold text-lg mb-4 gradient-text">{section.title}</h3>
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       to={link.href}
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary transition-colors hover:translate-x-1 inline-block transform"
                     >
                       {link.name}
                     </Link>

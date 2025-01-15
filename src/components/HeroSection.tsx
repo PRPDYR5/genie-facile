@@ -25,20 +25,24 @@ export function HeroSection({ user }: HeroSectionProps) {
             <>
               <Button
                 onClick={() => navigate("/auth")}
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg"
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg glass"
               >
                 Commencer maintenant
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/auth")}
-                className="border-primary text-primary hover:bg-primary/10 px-8 py-6 text-lg"
+                className="border-primary text-primary hover:bg-primary/10 px-8 py-6 text-lg glass"
               >
                 En savoir plus
               </Button>
             </>
           )}
         </div>
+      </div>
+
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:4rem_4rem]">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/50 to-transparent"></div>
       </div>
     </div>
   );

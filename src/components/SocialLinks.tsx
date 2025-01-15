@@ -1,18 +1,18 @@
-import { Telegram, WhatsApp } from "lucide-react";
+import { MessageCircle, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function SocialLinks() {
   const socialLinks = [
     {
       name: "WhatsApp",
-      icon: WhatsApp,
+      icon: MessageCircle,
       url: "https://chat.whatsapp.com/KEGeUBRJdSP5Ia35Wy5fdu",
       color: "bg-[#25D366]",
       hoverColor: "hover:bg-[#128C7E]",
     },
     {
       name: "Telegram",
-      icon: Telegram,
+      icon: MessagesSquare,
       url: "https://t.me/geniefacile05",
       color: "bg-[#0088cc]",
       hoverColor: "hover:bg-[#0077b5]",
@@ -31,7 +31,7 @@ export function SocialLinks() {
             <Button
               key={link.name}
               onClick={() => window.open(link.url, "_blank")}
-              className={`${link.color} ${link.hoverColor} text-white px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105`}
+              className={`${link.color} ${link.hoverColor} text-white px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-fade-in`}
             >
               <link.icon className="w-6 h-6 mr-2" />
               {link.name}

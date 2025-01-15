@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Telegram, WhatsApp } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/HeroSection";
 import { SocialLinks } from "@/components/SocialLinks";
@@ -17,7 +16,6 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check active session and subscribe to auth changes
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -63,29 +61,28 @@ const Index = () => {
   return (
     <Layout>
       <div className="min-h-screen">
-        {/* Hero Section */}
         <HeroSection user={user} />
-
-        {/* Social Links Section */}
         <SocialLinks />
 
-        {/* Main Content */}
         <div className="container mx-auto px-4 py-8 space-y-12">
           {user ? (
             <UserDashboard />
           ) : (
-            <div className="text-center space-y-4">
-              <h2 className="text-2xl font-bold text-primary">
+            <div className="text-center space-y-4 glass p-8 rounded-2xl animate-fade-in">
+              <h2 className="text-2xl font-bold gradient-text">
                 Connectez-vous pour accéder à toutes les fonctionnalités
               </h2>
-              <div className="flex justify-center gap-4">
-                <Button onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button 
+                  onClick={() => navigate("/auth")} 
+                  className="bg-primary hover:bg-primary/90 text-white px-8 py-6"
+                >
                   Se connecter
                 </Button>
                 <Button 
                   onClick={() => navigate("/auth")} 
                   variant="outline"
-                  className="border-primary text-primary hover:bg-primary/10"
+                  className="border-primary text-primary hover:bg-primary/10 px-8 py-6"
                 >
                   Créer un compte
                 </Button>
@@ -94,7 +91,6 @@ const Index = () => {
           )}
         </div>
 
-        {/* Footer */}
         <Footer />
       </div>
     </Layout>
