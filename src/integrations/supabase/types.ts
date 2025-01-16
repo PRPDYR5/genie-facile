@@ -99,6 +99,33 @@ export type Database = {
         }
         Relationships: []
       }
+      summaries: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          level: Database["public"]["Enums"]["level_type"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          level: Database["public"]["Enums"]["level_type"]
+          subject: Database["public"]["Enums"]["subject_type"]
+          title: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          level?: Database["public"]["Enums"]["level_type"]
+          subject?: Database["public"]["Enums"]["subject_type"]
+          title?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           created_at: string
@@ -141,6 +168,7 @@ export type Database = {
     }
     Enums: {
       education_level: "seconde" | "premiere" | "terminale"
+      level_type: "seconde" | "premiere" | "terminale"
       subject_type: "math" | "physics" | "info"
       supported_language: "fr" | "en"
     }

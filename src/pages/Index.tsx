@@ -12,6 +12,9 @@ import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
 import { SearchBar } from "@/components/SearchBar";
 import { PoeChat } from "@/components/PoeChat";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BookOpen, MessageCircle, Settings, Search, Dumbbell } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -39,6 +42,39 @@ const Index = () => {
     checkUser();
   }, []);
 
+  const quickAccessItems = [
+    {
+      title: "Résumés des cours",
+      description: "Accédez à tous vos cours et documents",
+      icon: BookOpen,
+      route: "/courses/summaries"
+    },
+    {
+      title: "Questions & Réponses",
+      description: "Posez vos questions et obtenez des réponses",
+      icon: MessageCircle,
+      route: "/courses/qa"
+    },
+    {
+      title: "Exercices",
+      description: "Pratiquez avec des exercices adaptés",
+      icon: Dumbbell,
+      route: "/courses/exercises"
+    },
+    {
+      title: "Recherche avancée",
+      description: "Recherchez des contenus spécifiques",
+      icon: Search,
+      route: "/search"
+    },
+    {
+      title: "Paramètres",
+      description: "Personnalisez votre expérience",
+      icon: Settings,
+      route: "/settings"
+    }
+  ];
+
   if (loading) {
     return (
       <Layout>
@@ -60,7 +96,27 @@ const Index = () => {
 
         {user ? (
           <div className="container mx-auto px-4 space-y-12">
-            <UserDashboard />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {quickAccessItems.map((item) => (
+                <Card 
+                  key={item.title}
+                  className="cursor-pointer hover:shadow-lg transition-all duration-300 glass hover:scale-105"
+                  onClick={() => navigate(item.route)}
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-4">
+                      <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center">
+                        <item.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-8">

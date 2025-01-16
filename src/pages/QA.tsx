@@ -17,6 +17,8 @@ interface QAEntry {
 export default function QA() {
   const [qaHistory, setQaHistory] = useState<QAEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLevel, setSelectedLevel] = useState<string>('terminale');
+  const [selectedSubject, setSelectedSubject] = useState<string>('math');
 
   useEffect(() => {
     fetchQAHistory();
@@ -42,8 +44,12 @@ export default function QA() {
     <Layout>
       <div className="space-y-8">
         <h1 className="text-4xl font-bold gradient-text">Questions & Réponses</h1>
-        <QuestionForm onQuestionSubmitted={fetchQAHistory} />
-        <QuestionHistory history={qaHistory} loading={loading} />
+        <QuestionForm 
+          selectedLevel={selectedLevel}
+          selectedSubject={selectedSubject}
+          onQuestionSubmitted={fetchQAHistory}
+        />
+        <QuestionHistory qaHistory={qaHistory} />
       </div>
     </Layout>
   );
