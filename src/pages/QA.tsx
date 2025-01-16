@@ -1,126 +1,128 @@
-import { Layout } from "@/components/Layout"
-import { Card } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState, useEffect } from "react"
-import { supabase } from "@/integrations/supabase/client"
-import { QuestionForm } from "@/components/QuestionForm"
-import { QuestionHistory } from "@/components/QuestionHistory"
-import { PoeChat } from "@/components/PoeChat"
+import { Layout } from "@/components/Layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MessageCircle, Send } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-type Level = "seconde" | "premiere" | "terminale"
-type Subject = "math" | "physics" | "info"
+interface QAItem {
+  id: string;
+  question: string;
+  answer: string;
+  created_at: string;
+}
 
 const QA = () => {
-  const [selectedLevel, setSelectedLevel] = useState<Level | "">("")
-  const [selectedSubject, setSelectedSubject] = useState<Subject | "">("")
-  const [qaHistory, setQaHistory] = useState<any[]>([])
+  const [question, setQuestion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [qaHistory, setQaHistory] = useState<QAItem[]>([]);
+  const { toast } = useToast();
 
-  const levels = [
-    { value: "seconde" as Level, label: "Seconde" },
-    { value: "premiere" as Level, label: "Première" },
-    { value: "terminale" as Level, label: "Terminale" }
-  ]
+  const handleSubmitQuestion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!question.trim()) return;
 
-  const subjects = [
-    { value: "math" as Subject, label: "Mathématiques" },
-    { value: "physics" as Subject, label: "Sciences Physiques" },
-    { value: "info" as Subject, label: "Informatique" }
-  ]
-
-  const loadQAHistory = async () => {
     try {
-      console.log("Chargement de l'historique Q&A...")
-      let query = supabase.from('qa_history').select('*')
+      setLoading(true);
       
-      if (selectedLevel) {
-        query = query.eq('level', selectedLevel)
-      }
-      if (selectedSubject) {
-        query = query.eq('subject', selectedSubject)
-      }
+      // Ici, nous simulerons une réponse pour l'exemple
+      // Dans une vraie application, vous appelleriez une API ou un service d'IA
+      const answer = "Voici une réponse simulée à votre question. Dans une vraie application, cette réponse serait générée par une IA ou fournie par un enseignant.";
+      
+      const { data, error } = await supabase
+        .from('qa_history')
+        .insert([
+          {
+            question: question.trim(),
+            answer,
+            subject: 'general',
+            level: 'all'
+          }
+        ])
+        .select()
+        .single();
 
-      const { data, error } = await query.order('created_at', { ascending: false })
+      if (error) throw error;
+
+      setQaHistory([data, ...qaHistory]);
+      setQuestion("");
       
-      if (error) throw error
-      console.log("Historique Q&A chargé:", data)
-      setQaHistory(data || [])
+      toast({
+        title: "Question envoyée",
+        description: "Votre question a été traitée avec succès",
+      });
     } catch (error) {
-      console.error("Erreur lors du chargement de l'historique:", error)
+      console.error('Error submitting question:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de traiter votre question",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    loadQAHistory()
-  }, [selectedLevel, selectedSubject])
+  };
 
   return (
     <Layout>
-      <div className="space-y-8 animate-fade-in">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">Questions-Réponses</h1>
-          <p className="text-lg text-[#9b87f5]/80">
-            Posez vos questions sur les cours et obtenez des réponses personnalisées
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Niveau</label>
-            <Select value={selectedLevel} onValueChange={(value: Level) => setSelectedLevel(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir un niveau" />
-              </SelectTrigger>
-              <SelectContent>
-                {levels.map((level) => (
-                  <SelectItem key={level.value} value={level.value}>
-                    {level.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Matière</label>
-            <Select value={selectedSubject} onValueChange={(value: Subject) => setSelectedSubject(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir une matière" />
-              </SelectTrigger>
-              <SelectContent>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject.value} value={subject.value}>
-                    {subject.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <Card className="p-6 glass">
-              <QuestionForm
-                selectedLevel={selectedLevel}
-                selectedSubject={selectedSubject}
-                onQuestionSubmitted={loadQAHistory}
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8 gradient-text">Questions & Réponses</h1>
+        
+        <Card className="mb-8 glass">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmitQuestion} className="flex gap-4">
+              <Input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Posez votre question..."
+                className="flex-1"
+                disabled={loading}
               />
-            </Card>
-          </div>
-          <div className="md:col-span-1">
-            <PoeChat />
-          </div>
-        </div>
+              <Button type="submit" disabled={loading || !question.trim()}>
+                <Send className="w-4 h-4 mr-2" />
+                Envoyer
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-[#9b87f5]">
-            Historique des questions
-          </h2>
-          <QuestionHistory qaHistory={qaHistory} />
+          {qaHistory.length === 0 ? (
+            <Card className="glass">
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <MessageCircle className="w-16 h-16 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground text-center">
+                  Aucune question pour le moment
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            qaHistory.map((item) => (
+              <Card key={item.id} className="glass">
+                <CardContent className="pt-6">
+                  <div className="mb-4">
+                    <h3 className="font-semibold text-lg mb-2">Q: {item.question}</h3>
+                    <p className="text-muted-foreground">R: {item.answer}</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(item.created_at).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default QA
+export default QA;

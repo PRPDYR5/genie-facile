@@ -1,171 +1,189 @@
 import { Layout } from "@/components/Layout";
-import { Card } from "@/components/ui/card";
-import { ClipboardList, BookOpen, Star } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { 
+  BookOpen, 
+  Calculator, 
+  CircuitBoard, 
+  Database,
+  CheckCircle2,
+  XCircle,
+  RefreshCcw
+} from "lucide-react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+
+interface Exercise {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
+
+const mockExercises: Exercise[] = [
+  {
+    id: "1",
+    question: "Quelle est la loi d'Ohm ?",
+    options: [
+      "U = R × I",
+      "P = U × I",
+      "E = m × c²",
+      "F = m × a"
+    ],
+    correctAnswer: 0
+  },
+  {
+    id: "2",
+    question: "Dans un circuit série, comment se comporte l'intensité du courant ?",
+    options: [
+      "Elle varie selon les composants",
+      "Elle est constante dans tout le circuit",
+      "Elle diminue progressivement",
+      "Elle augmente progressivement"
+    ],
+    correctAnswer: 1
+  }
+];
 
 const Exercises = () => {
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-
-  const levels = [
-    { value: "seconde", label: "Seconde" },
-    { value: "premiere", label: "Première" },
-    { value: "terminale", label: "Terminale" }
-  ];
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const { toast } = useToast();
 
   const subjects = [
-    { value: "math", label: "Mathématiques" },
-    { value: "physics", label: "Sciences Physiques" },
-    { value: "info", label: "Informatique" }
-  ];
-
-  const exercises = [
     {
-      title: "Série d'exercices - Fonctions",
-      description: "10 exercices sur les fonctions linéaires et affines",
-      level: "Seconde",
-      subject: "Mathématiques",
-      difficulty: "Facile",
-      type: "Exercices",
-      isNew: true
+      title: "Électricité",
+      icon: CircuitBoard,
+      description: "Lois fondamentales et circuits"
     },
     {
-      title: "Annales 2023 - Mathématiques",
-      description: "Sujet complet avec corrigé détaillé",
-      level: "Terminale",
-      subject: "Mathématiques",
-      difficulty: "Moyen",
-      type: "Annales",
-      isNew: true
+      title: "Électronique",
+      icon: Database,
+      description: "Composants et systèmes"
     },
     {
-      title: "Série d'exercices - Forces",
-      description: "8 exercices sur les forces et le mouvement",
-      level: "Seconde",
-      subject: "Physique",
-      difficulty: "Moyen",
-      type: "Exercices"
+      title: "Mathématiques",
+      icon: Calculator,
+      description: "Calculs et formules"
     },
     {
-      title: "Annales 2023 - Physique",
-      description: "Sujet complet avec corrigé détaillé",
-      level: "Terminale",
-      subject: "Physique",
-      difficulty: "Difficile",
-      type: "Annales",
-      isNew: true
-    },
-    {
-      title: "Série d'exercices - Algorithmes",
-      description: "5 exercices sur les structures de contrôle",
-      level: "Seconde",
-      subject: "Informatique",
-      difficulty: "Difficile",
-      type: "Exercices"
+      title: "Physique",
+      icon: BookOpen,
+      description: "Mécanique et énergétique"
     }
   ];
 
-  const filteredExercises = exercises.filter(exercise => {
-    if (selectedLevel && exercise.level.toLowerCase() !== selectedLevel) return false;
-    if (selectedSubject && exercise.subject !== subjects.find(s => s.value === selectedSubject)?.label) return false;
-    return true;
-  });
+  const startExercise = () => {
+    const randomExercise = mockExercises[Math.floor(Math.random() * mockExercises.length)];
+    setCurrentExercise(randomExercise);
+    setSelectedAnswer(null);
+    setShowResult(false);
+  };
+
+  const handleAnswerSelect = (answerIndex: number) => {
+    if (showResult) return;
+    setSelectedAnswer(answerIndex);
+  };
+
+  const checkAnswer = () => {
+    if (selectedAnswer === null) {
+      toast({
+        title: "Attention",
+        description: "Veuillez sélectionner une réponse",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setShowResult(true);
+    
+    if (selectedAnswer === currentExercise?.correctAnswer) {
+      toast({
+        title: "Félicitations !",
+        description: "C'est la bonne réponse !",
+      });
+    } else {
+      toast({
+        title: "Pas tout à fait...",
+        description: "Essayez encore !",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Layout>
-      <div className="space-y-8 animate-fade-in">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">Exercices & Annales</h1>
-          <p className="text-lg text-[#9b87f5]/80">
-            Des exercices et annales pour vous entraîner et progresser
-          </p>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8 gradient-text">Exercices</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Niveau</label>
-            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir un niveau" />
-              </SelectTrigger>
-              <SelectContent>
-                {levels.map((level) => (
-                  <SelectItem key={level.value} value={level.value}>
-                    {level.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Matière</label>
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir une matière" />
-              </SelectTrigger>
-              <SelectContent>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject.value} value={subject.value}>
-                    {subject.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid gap-6">
-          {filteredExercises.map((exercise, index) => (
-            <Card key={index} className="p-6 glass card-hover">
-              <div className="flex items-start gap-4">
-                <div className="bg-[#9b87f5]/20 p-3 rounded-lg">
-                  {exercise.type === "Annales" ? (
-                    <BookOpen className="h-6 w-6 text-[#9b87f5]" />
-                  ) : (
-                    <ClipboardList className="h-6 w-6 text-[#9b87f5]" />
-                  )}
-                </div>
-                <div className="space-y-2 flex-1">
-                  <div className="flex justify-between items-start flex-wrap gap-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-semibold text-[#9b87f5]">
-                        {exercise.title}
-                      </h3>
-                      {exercise.isNew && (
-                        <Badge variant="secondary" className="bg-[#9b87f5]/20 text-[#9b87f5]">
-                          Nouveau
-                        </Badge>
-                      )}
+        {!currentExercise ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {subjects.map((subject) => (
+              <Card 
+                key={subject.title}
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 glass"
+                onClick={startExercise}
+              >
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center">
+                      <subject.icon className="w-6 h-6 text-primary" />
                     </div>
-                    <div className="flex gap-2">
-                      <Badge variant="outline" className="border-[#9b87f5]/20 text-[#9b87f5]">
-                        {exercise.type}
-                      </Badge>
-                      <Badge 
-                        className={`
-                          ${exercise.difficulty === 'Facile' ? 'bg-green-500/20 text-green-500' : 
-                            exercise.difficulty === 'Moyen' ? 'bg-yellow-500/20 text-yellow-500' : 
-                            'bg-red-500/20 text-red-500'}
-                        `}
-                      >
-                        {exercise.difficulty}
-                      </Badge>
-                    </div>
+                    <CardTitle className="text-xl">{subject.title}</CardTitle>
                   </div>
-                  <p className="text-[#9b87f5]/70">{exercise.description}</p>
-                  <div className="flex gap-4 text-sm text-[#9b87f5]/60">
-                    <span>{exercise.level}</span>
-                    <span>•</span>
-                    <span>{exercise.subject}</span>
-                  </div>
-                </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{subject.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="glass">
+            <CardContent className="pt-6">
+              <h2 className="text-2xl font-semibold mb-6">{currentExercise.question}</h2>
+              
+              <div className="space-y-4 mb-6">
+                {currentExercise.options.map((option, index) => (
+                  <Button
+                    key={index}
+                    variant={selectedAnswer === index ? "default" : "outline"}
+                    className="w-full justify-start text-left"
+                    onClick={() => handleAnswerSelect(index)}
+                  >
+                    {showResult && index === currentExercise.correctAnswer && (
+                      <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
+                    )}
+                    {showResult && index === selectedAnswer && index !== currentExercise.correctAnswer && (
+                      <XCircle className="w-4 h-4 mr-2 text-red-500" />
+                    )}
+                    {option}
+                  </Button>
+                ))}
               </div>
-            </Card>
-          ))}
-        </div>
+
+              <div className="flex justify-end gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentExercise(null)}
+                >
+                  Retour
+                </Button>
+                {showResult ? (
+                  <Button onClick={startExercise}>
+                    <RefreshCcw className="w-4 h-4 mr-2" />
+                    Suivant
+                  </Button>
+                ) : (
+                  <Button onClick={checkAnswer}>
+                    Vérifier
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </Layout>
   );
