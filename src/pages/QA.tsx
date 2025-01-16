@@ -1,65 +1,38 @@
 import { Layout } from "@/components/Layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MessageCircle, Send } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { QuestionForm } from "@/components/QuestionForm";
+import { QuestionHistory } from "@/components/QuestionHistory";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-interface QAItem {
+interface QAEntry {
   id: string;
   question: string;
   answer: string;
+  pdf_source: string;
+  subject: 'math' | 'physics' | 'info';
+  level: 'seconde' | 'premiere' | 'terminale';
   created_at: string;
 }
 
-const QA = () => {
-  const [question, setQuestion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [qaHistory, setQaHistory] = useState<QAItem[]>([]);
-  const { toast } = useToast();
+export default function QA() {
+  const [qaHistory, setQaHistory] = useState<QAEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmitQuestion = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!question.trim()) return;
+  useEffect(() => {
+    fetchQAHistory();
+  }, []);
 
+  const fetchQAHistory = async () => {
     try {
-      setLoading(true);
-      
-      // Ici, nous simulerons une réponse pour l'exemple
-      // Dans une vraie application, vous appelleriez une API ou un service d'IA
-      const answer = "Voici une réponse simulée à votre question. Dans une vraie application, cette réponse serait générée par une IA ou fournie par un enseignant.";
-      
       const { data, error } = await supabase
         .from('qa_history')
-        .insert([
-          {
-            question: question.trim(),
-            answer,
-            subject: 'general',
-            level: 'all'
-          }
-        ])
-        .select()
-        .single();
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      setQaHistory([data, ...qaHistory]);
-      setQuestion("");
-      
-      toast({
-        title: "Question envoyée",
-        description: "Votre question a été traitée avec succès",
-      });
+      setQaHistory(data || []);
     } catch (error) {
-      console.error('Error submitting question:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de traiter votre question",
-        variant: "destructive",
-      });
+      console.error('Error fetching QA history:', error);
     } finally {
       setLoading(false);
     }
@@ -67,62 +40,11 @@ const QA = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Questions & Réponses</h1>
-        
-        <Card className="mb-8 glass">
-          <CardContent className="pt-6">
-            <form onSubmit={handleSubmitQuestion} className="flex gap-4">
-              <Input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Posez votre question..."
-                className="flex-1"
-                disabled={loading}
-              />
-              <Button type="submit" disabled={loading || !question.trim()}>
-                <Send className="w-4 h-4 mr-2" />
-                Envoyer
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          {qaHistory.length === 0 ? (
-            <Card className="glass">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <MessageCircle className="w-16 h-16 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground text-center">
-                  Aucune question pour le moment
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            qaHistory.map((item) => (
-              <Card key={item.id} className="glass">
-                <CardContent className="pt-6">
-                  <div className="mb-4">
-                    <h3 className="font-semibold text-lg mb-2">Q: {item.question}</h3>
-                    <p className="text-muted-foreground">R: {item.answer}</p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(item.created_at).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+      <div className="space-y-8">
+        <h1 className="text-4xl font-bold gradient-text">Questions & Réponses</h1>
+        <QuestionForm onQuestionSubmitted={fetchQAHistory} />
+        <QuestionHistory history={qaHistory} loading={loading} />
       </div>
     </Layout>
   );
-};
-
-export default QA;
+}

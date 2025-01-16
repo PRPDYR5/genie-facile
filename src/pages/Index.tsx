@@ -8,6 +8,10 @@ import { toast } from "@/hooks/use-toast";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/HeroSection";
 import { SocialLinks } from "@/components/SocialLinks";
+import { StudyScheduler } from "@/components/StudyScheduler";
+import { StudyScheduleList } from "@/components/StudyScheduleList";
+import { SearchBar } from "@/components/SearchBar";
+import { PoeChat } from "@/components/PoeChat";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -35,18 +39,6 @@ const Index = () => {
     checkUser();
   }, []);
 
-  const handleProtectedAction = () => {
-    if (!user) {
-      toast({
-        title: "Accès restreint",
-        description: "Pour accéder à cette fonctionnalité, veuillez vous connecter ou créer un compte.",
-        variant: "destructive",
-      });
-      navigate("/auth");
-      return;
-    }
-  };
-
   if (loading) {
     return (
       <Layout>
@@ -59,25 +51,42 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen">
+      <div className="min-h-screen space-y-12">
         <HeroSection user={user} />
-        <SocialLinks />
-
-        <div className="container mx-auto px-4 py-8 space-y-12">
-          {user ? (
-            <UserDashboard />
-          ) : (
-            <div className="text-center space-y-4 glass p-8 rounded-2xl animate-fade-in">
-              <h2 className="text-2xl font-bold gradient-text">
-                Connectez-vous pour accéder à toutes les fonctionnalités
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Créez un compte ou connectez-vous pour profiter de toutes les ressources disponibles.
-              </p>
-            </div>
-          )}
+        
+        <div className="container mx-auto px-4">
+          <SearchBar />
         </div>
 
+        {user ? (
+          <div className="container mx-auto px-4 space-y-12">
+            <UserDashboard />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold gradient-text">Planification des études</h2>
+                <StudyScheduler />
+                <StudyScheduleList />
+              </div>
+              
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold gradient-text">Assistant IA</h2>
+                <PoeChat />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center space-y-4 glass p-8 rounded-2xl animate-fade-in container mx-auto">
+            <h2 className="text-2xl font-bold gradient-text">
+              Connectez-vous pour accéder à toutes les fonctionnalités
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Créez un compte ou connectez-vous pour profiter de toutes les ressources disponibles.
+            </p>
+          </div>
+        )}
+
+        <SocialLinks />
         <Footer />
       </div>
     </Layout>
