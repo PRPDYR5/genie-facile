@@ -6,11 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Layout } from "@/components/Layout";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
   const navigate = useNavigate();
@@ -21,7 +23,9 @@ export default function Auth() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          navigate("/");
+          const redirectUrl = sessionStorage.getItem('redirectUrl') || '/';
+          sessionStorage.removeItem('redirectUrl');
+          navigate(redirectUrl);
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de la session:", error);
@@ -31,7 +35,9 @@ export default function Auth() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        const redirectUrl = sessionStorage.getItem('redirectUrl') || '/';
+        sessionStorage.removeItem('redirectUrl');
+        navigate(redirectUrl);
       }
     });
 
@@ -59,7 +65,6 @@ export default function Auth() {
           title: "Connexion réussie",
           description: "Bienvenue sur Génie Facile !",
         });
-        navigate("/");
       } else {
         console.log("Mode inscription");
         const { error: signUpError } = await supabase.auth.signUp({
@@ -114,14 +119,27 @@ export default function Auth() {
                 required
                 className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
               />
-              <Input
-                type="password"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA] pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b87f5] hover:text-[#D6BCFA]"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <Button
