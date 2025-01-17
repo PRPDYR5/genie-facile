@@ -1,78 +1,47 @@
 import { Layout } from "@/components/Layout";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
-import { Footer } from "@/components/Footer";
-import { HeroSection } from "@/components/HeroSection";
-import { SocialLinks } from "@/components/SocialLinks";
+import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
-import { SearchBar } from "@/components/SearchBar";
-import { PoeChat } from "@/components/PoeChat";
 
 const Index = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-        setLoading(false);
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-          setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
-      } catch (error) {
-        console.error("Error checking auth status:", error);
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-  }, []);
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#9b87f5]"></div>
-        </div>
-      </Layout>
-    );
-  }
-
+  console.log("Rendering Index page");
+  
   return (
     <Layout>
-      <div className="min-h-screen space-y-12 bg-[#0f0f1a]">
-        <HeroSection user={user} />
-        
-        {user && (
-          <div className="container mx-auto px-4 space-y-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold text-[#9b87f5]">Planification des études</h2>
-                <StudyScheduler />
-                <StudyScheduleList />
-              </div>
-              
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold text-[#9b87f5]">Assistant IA</h2>
-                <PoeChat />
-              </div>
-            </div>
+      <div className="space-y-8 sm:space-y-16 animate-fade-in px-2 sm:px-0">
+        {/* Hero Section */}
+        <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-8 sm:py-16">
+          <h1 className="text-3xl sm:text-6xl font-bold font-poppins gradient-text animate-float">
+            Un apprentissage simplifié, pour un futur brillant
+          </h1>
+          <p className="text-lg sm:text-2xl text-[#9b87f5]/80 font-roboto leading-relaxed px-4">
+            Génie Facile est votre professeur virtuel, prêt à vous accompagner dans vos études techniques de la série F3
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 sm:pt-8 px-4">
+            <a
+              href="/courses/summaries"
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg shadow-lg shadow-[#9b87f5]/20"
+            >
+              Voir les résumés
+            </a>
+            <a
+              href="/courses/qa"
+              className="px-6 py-3 sm:px-8 sm:py-4 bg-[#9b87f5]/10 border border-[#9b87f5]/20 text-[#9b87f5] rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg backdrop-blur-sm"
+            >
+              Questions-réponses
+            </a>
           </div>
-        )}
+        </div>
 
-        <SocialLinks />
-        <Footer />
+        {/* Search and Dashboard Section */}
+        <div className="space-y-6 sm:space-y-8 px-2">
+          <UserDashboard />
+          <StudyScheduler />
+          <StudyScheduleList />
+        </div>
       </div>
     </Layout>
   );
-}
+};
 
 export default Index;

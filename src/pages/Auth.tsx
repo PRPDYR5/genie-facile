@@ -6,17 +6,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Layout } from "@/components/Layout";
-import { Eye, EyeOff } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AuthError, AuthApiError } from "@supabase/supabase-js";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -37,57 +32,45 @@ export default function Auth() {
       if (session) {
         navigate("/");
       }
-      if (event === 'SIGNED_OUT') {
-        setErrorMessage("");
-      }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const getErrorMessage = (error: AuthError) => {
-    if (error instanceof AuthApiError) {
-      switch (error.status) {
-        case 400:
-          return "Email ou mot de passe invalide.";
-        case 422:
-          return "Format d'email invalide.";
-        case 429:
-          return "Trop de tentatives, veuillez réessayer plus tard.";
-        default:
-          return error.message;
-      }
-    }
-    return error.message;
-  };
-
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage("");
     
     try {
+      console.log("Tentative d'authentification...");
+      const emailRedirectTo = `${window.location.origin}/auth/callback`;
+      
       if (isLogin) {
+        console.log("Mode connexion");
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (signInError) throw signInError;
         
+        console.log("Connexion réussie");
         toast({
           title: "Connexion réussie",
           description: "Bienvenue sur Génie Facile !",
         });
+        navigate("/");
       } else {
+        console.log("Mode inscription");
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
+            emailRedirectTo
           }
         });
         if (signUpError) throw signUpError;
         
+        console.log("Inscription réussie");
         toast({
           title: "Compte créé avec succès",
           description: "Vérifiez votre email pour confirmer votre compte.",
@@ -95,11 +78,10 @@ export default function Auth() {
       }
     } catch (error: any) {
       console.error("Erreur d'authentification:", error);
-      setErrorMessage(getErrorMessage(error));
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: getErrorMessage(error),
+        description: error.message || "Une erreur est survenue lors de l'authentification",
       });
     } finally {
       setLoading(false);
@@ -111,7 +93,7 @@ export default function Auth() {
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
         <Card className="w-full max-w-md p-8 space-y-8 glass">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold gradient-text">
+            <h1 className="text-3xl font-bold text-[#9b87f5]">
               {isLogin ? "Connexion" : "Créer un compte"}
             </h1>
             <p className="text-muted-foreground">
@@ -120,12 +102,6 @@ export default function Auth() {
                 : "Inscrivez-vous pour commencer à apprendre"}
             </p>
           </div>
-
-          {errorMessage && (
-            <Alert variant="destructive">
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
 
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-4">
@@ -137,29 +113,14 @@ export default function Auth() {
                 required
                 className="glass"
               />
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="glass pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+              <Input
+                type="password"
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="glass"
+              />
             </div>
 
             <Button

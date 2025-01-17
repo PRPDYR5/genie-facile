@@ -30,11 +30,11 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#9b87f5",
-          foreground: "#1a1a2e",
+          foreground: "#FFFFFF",
         },
         secondary: {
           DEFAULT: "#7E69AB",
-          foreground: "#1a1a2e",
+          foreground: "#FFFFFF",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -56,6 +56,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {

@@ -58,6 +58,7 @@ export function SearchBar() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
+  // Fonction pour transformer les données des cours en format plat pour la recherche
   const getAllCourses = () => {
     const courses: SearchResult[] = [];
     Object.entries(coursesData).forEach(([level, subjects]) => {
@@ -96,6 +97,7 @@ export function SearchBar() {
     console.log("Cours sélectionné:", course);
     setOpen(false);
     
+    // Redirection vers la page des cours avec les bons paramètres et l'URL du PDF
     navigate(`/courses?level=${course.level}&subject=${course.subject}&pdf=${encodeURIComponent(course.url)}`);
     
     toast({
@@ -104,6 +106,7 @@ export function SearchBar() {
     });
   };
 
+  // Initialiser les résultats au chargement
   useEffect(() => {
     setSearchResults(getAllCourses());
   }, []);
@@ -112,23 +115,22 @@ export function SearchBar() {
     <div className="w-full max-w-3xl mx-auto">
       <div
         onClick={() => setOpen(true)}
-        className="bg-[#1A1F2C]/40 border border-[#9b87f5]/20 backdrop-blur-lg flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer hover:bg-[#1A1F2C]/60 transition-all duration-200"
+        className="glass flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-200"
       >
         <Search className="w-5 h-5 text-[#9b87f5]" />
         <Input
           type="text"
           placeholder="Rechercher des cours par nom, niveau ou matière..."
-          className="bg-transparent border-none focus-visible:ring-0 placeholder:text-[#9b87f5]/50 text-white"
+          className="bg-transparent border-none focus-visible:ring-0 placeholder:text-[#9b87f5]/50"
           readOnly
         />
       </div>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command className="rounded-lg border border-[#9b87f5]/20 bg-[#1A1F2C]/95 backdrop-blur-lg">
+        <Command className="rounded-lg border shadow-md">
           <CommandInput 
             placeholder="Que recherchez-vous ?" 
             onValueChange={handleSearch}
-            className="border-b border-[#9b87f5]/20"
           />
           <CommandList>
             <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
@@ -137,10 +139,10 @@ export function SearchBar() {
                 <CommandItem
                   key={index}
                   onSelect={() => handleSelectCourse(course)}
-                  className="flex items-center justify-between cursor-pointer hover:bg-[#9b87f5]/10"
+                  className="flex items-center justify-between cursor-pointer"
                 >
                   <div>
-                    <span className="font-medium text-white">{course.name}</span>
+                    <span className="font-medium">{course.name}</span>
                     <span className="ml-2 text-sm text-[#9b87f5]/70">
                       ({course.level})
                     </span>
