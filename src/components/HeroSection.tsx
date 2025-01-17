@@ -37,7 +37,7 @@ export function HeroSection({ user }: HeroSectionProps) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               onClick={() => navigate("/courses/summaries")}
-              className="bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] hover:opacity-90 text-white px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] hover:opacity-90 text-[#1a1a2e] px-8 py-6 rounded-xl transition-all duration-300 transform hover:scale-105"
             >
               Voir les résumés
             </Button>
