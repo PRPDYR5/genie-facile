@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogIn, UserPlus } from "lucide-react";
+import { ArrowLeft, LogIn, UserPlus, MessageSquare } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main className={`flex-1 ${isMobile ? 'p-3' : 'p-6'}`}>
           <div className="container max-w-full">
             <div className="flex items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 {!isHomePage && (
                   <Button 
                     variant="ghost" 
@@ -41,6 +41,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </Button>
                 )}
                 <SidebarTrigger />
+                
+                {/* Social Media Links */}
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://chat.whatsapp.com/KEGeUBRJdSP5Ia35Wy5fdu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-[#25D366] hover:bg-[#128C7E] transition-colors"
+                    title="Rejoindre le groupe WhatsApp"
+                  >
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </a>
+                  <a
+                    href="https://t.me/geniefacile05"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0088cc] hover:bg-[#0077b5] transition-colors"
+                    title="Rejoindre le groupe Telegram"
+                  >
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </a>
+                </div>
               </div>
 
               {/* Auth Buttons */}
