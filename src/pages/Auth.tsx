@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -8,10 +8,11 @@ import { Card } from "@/components/ui/card";
 import { Layout } from "@/components/Layout";
 
 export default function Auth() {
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -90,13 +91,13 @@ export default function Auth() {
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted">
-        <Card className="w-full max-w-md p-8 space-y-8 glass">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-[#1A1F2C] to-[#403E43]">
+        <Card className="w-full max-w-md p-8 space-y-8 bg-[#221F26]/80 backdrop-blur-lg border-[#9b87f5]/20">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold text-[#9b87f5]">
               {isLogin ? "Connexion" : "Créer un compte"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-[#888888]">
               {isLogin
                 ? "Connectez-vous pour accéder à vos cours"
                 : "Inscrivez-vous pour commencer à apprendre"}
@@ -111,7 +112,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="glass"
+                className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
               />
               <Input
                 type="password"
@@ -119,13 +120,13 @@ export default function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="glass"
+                className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-[#9b87f5] hover:bg-[#8b77e5]"
+              className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-[#1A1F2C]"
               disabled={loading}
             >
               {loading
@@ -140,7 +141,7 @@ export default function Auth() {
             <Button
               variant="link"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[#9b87f5]"
+              className="text-[#9b87f5] hover:text-[#D6BCFA]"
             >
               {isLogin
                 ? "Pas encore de compte ? S'inscrire"
