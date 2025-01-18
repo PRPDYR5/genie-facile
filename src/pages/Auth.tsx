@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Layout } from "@/components/Layout";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -15,6 +15,7 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -94,78 +95,158 @@ export default function Auth() {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=update-password`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email envoyé",
+        description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe.",
+      });
+      setIsResetPassword(false);
+    } catch (error: any) {
+      console.error("Erreur lors de la réinitialisation du mot de passe:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la réinitialisation du mot de passe",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-[#1A1F2C] to-[#403E43]">
         <Card className="w-full max-w-md p-8 space-y-8 bg-[#221F26]/80 backdrop-blur-lg border-[#9b87f5]/20">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-[#9b87f5]">
-              {isLogin ? "Connexion" : "Créer un compte"}
-            </h1>
-            <p className="text-[#888888]">
-              {isLogin
-                ? "Connectez-vous pour accéder à vos cours"
-                : "Inscrivez-vous pour commencer à apprendre"}
-            </p>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-6">
-            <div className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
-              />
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Mot de passe"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA] pr-10"
-                />
+          {isResetPassword ? (
+            <>
+              <div className="text-center space-y-2">
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b87f5] hover:text-[#D6BCFA]"
+                  onClick={() => setIsResetPassword(false)}
+                  className="absolute left-4 top-4 text-[#9b87f5] hover:text-[#D6BCFA] flex items-center gap-2"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  <ArrowLeft className="h-4 w-4" />
+                  Retour
                 </button>
+                <h1 className="text-3xl font-bold text-[#9b87f5]">
+                  Réinitialiser le mot de passe
+                </h1>
+                <p className="text-[#888888]">
+                  Entrez votre email pour recevoir les instructions
+                </p>
               </div>
-            </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-[#1A1F2C]"
-              disabled={loading}
-            >
-              {loading
-                ? "Chargement..."
-                : isLogin
-                ? "Se connecter"
-                : "Créer un compte"}
-            </Button>
-          </form>
+              <form onSubmit={handleResetPassword} className="space-y-6">
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
+                />
 
-          <div className="text-center">
-            <Button
-              variant="link"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-[#9b87f5] hover:text-[#D6BCFA]"
-            >
-              {isLogin
-                ? "Pas encore de compte ? S'inscrire"
-                : "Déjà un compte ? Se connecter"}
-            </Button>
-          </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-[#1A1F2C]"
+                  disabled={loading}
+                >
+                  {loading ? "Envoi en cours..." : "Envoyer les instructions"}
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <div className="text-center space-y-2">
+                <h1 className="text-3xl font-bold text-[#9b87f5]">
+                  {isLogin ? "Connexion" : "Créer un compte"}
+                </h1>
+                <p className="text-[#888888]">
+                  {isLogin
+                    ? "Connectez-vous pour accéder à vos cours"
+                    : "Inscrivez-vous pour commencer à apprendre"}
+                </p>
+              </div>
+
+              <form onSubmit={handleAuth} className="space-y-6">
+                <div className="space-y-4">
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA]"
+                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Mot de passe"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="bg-[#333333] border-[#9b87f5]/20 text-[#D6BCFA] pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9b87f5] hover:text-[#D6BCFA]"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {isLogin && (
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setIsResetPassword(true)}
+                    className="text-[#9b87f5] hover:text-[#D6BCFA] p-0 h-auto font-normal"
+                  >
+                    Mot de passe oublié ?
+                  </Button>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-[#1A1F2C]"
+                  disabled={loading}
+                >
+                  {loading
+                    ? "Chargement..."
+                    : isLogin
+                    ? "Se connecter"
+                    : "Créer un compte"}
+                </Button>
+              </form>
+
+              <div className="text-center">
+                <Button
+                  variant="link"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-[#9b87f5] hover:text-[#D6BCFA]"
+                >
+                  {isLogin
+                    ? "Pas encore de compte ? S'inscrire"
+                    : "Déjà un compte ? Se connecter"}
+                </Button>
+              </div>
+            </>
+          )}
         </Card>
       </div>
     </Layout>
