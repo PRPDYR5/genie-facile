@@ -18,28 +18,43 @@ interface StudySession {
 
 export const StudyScheduleList = () => {
   const [sessions, setSessions] = useState<StudySession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   const fetchSessions = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      
+      if (!user) {
+        console.log("Aucun utilisateur connecté");
+        setIsLoading(false);
+        return;
+      }
 
+      console.log("Récupération des sessions pour l'utilisateur:", user.id);
       const { data, error } = await supabase
         .from('study_schedules')
         .select('*')
+        .eq('user_id', user.id)
         .order('start_time', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur lors de la récupération des sessions:', error);
+        throw error;
+      }
+
+      console.log("Sessions récupérées:", data);
       setSessions(data || []);
       
     } catch (error) {
-      console.error('Error fetching study sessions:', error);
+      console.error('Erreur lors de la récupération des sessions:', error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les sessions d'étude",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,7 +74,7 @@ export const StudyScheduleList = () => {
 
       fetchSessions();
     } catch (error) {
-      console.error('Error deleting study session:', error);
+      console.error('Erreur lors de la suppression de la session:', error);
       toast({
         title: "Erreur",
         description: "Impossible de supprimer la session",
@@ -96,6 +111,18 @@ export const StudyScheduleList = () => {
 
     return () => clearInterval(interval);
   }, [sessions]);
+
+  if (isLoading) {
+    return (
+      <Card className="mt-6 glass">
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">
+            Chargement des sessions...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (sessions.length === 0) {
     return (
