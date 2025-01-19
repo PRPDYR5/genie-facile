@@ -37,15 +37,14 @@ export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitt
 
     setIsLoading(true)
     try {
-      console.log("Envoi de la question au bot Poe:", userQuestion)
+      console.log("Envoi de la question à Deepseek:", userQuestion)
       
-      // Call the Poe bot through Edge Function
-      const { data: response, error: functionError } = await supabase.functions.invoke('process-poe-question', {
+      // Call the Deepseek bot through Edge Function
+      const { data: response, error: functionError } = await supabase.functions.invoke('process-deepseek-question', {
         body: {
           question: userQuestion,
           level: selectedLevel,
-          subject: selectedSubject,
-          botId: "Genie05-Bot"
+          subject: selectedSubject
         }
       })
 
@@ -61,7 +60,7 @@ export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitt
           answer,
           level: selectedLevel as "seconde" | "premiere" | "terminale",
           subject: selectedSubject as "math" | "physics" | "info",
-          pdf_source: "poe-bot" // Indicating the source is the Poe bot
+          pdf_source: "deepseek-ai"
         }])
 
       if (insertError) throw insertError
