@@ -28,11 +28,13 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    console.log("Settings component mounted, loading user preferences...");
     loadUserPreferences();
   }, []);
 
   // Appliquer les préférences dès qu'elles changent
   useEffect(() => {
+    console.log("Applying preferences:", preferences);
     applyPreferences(preferences);
   }, [preferences]);
 
@@ -79,6 +81,11 @@ export default function Settings() {
       }
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger vos préférences",
+      });
     } finally {
       setLoading(false);
     }
@@ -90,22 +97,25 @@ export default function Settings() {
     // Appliquer le thème
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(prefs.theme);
+    localStorage.setItem('theme', prefs.theme);
     
     // Appliquer la taille de police
     const fontSize = getFontSize(prefs.font_size);
     document.documentElement.style.fontSize = fontSize;
     document.body.style.fontSize = fontSize;
+    localStorage.setItem('fontSize', prefs.font_size);
     
     // Appliquer la langue
     document.documentElement.lang = prefs.language;
+    localStorage.setItem('language', prefs.language);
     
     // Appliquer le mode focus
     if (prefs.focus_mode) {
-      console.log('Focus mode enabled');
       document.body.classList.add('focus-mode');
     } else {
       document.body.classList.remove('focus-mode');
     }
+    localStorage.setItem('focusMode', prefs.focus_mode.toString());
   };
 
   const getFontSize = (size: string): string => {
@@ -285,4 +295,4 @@ export default function Settings() {
       </div>
     </Layout>
   );
-}
+};
