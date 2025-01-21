@@ -4,7 +4,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -133,24 +133,27 @@ export default function Settings() {
   const applyPreferences = (prefs: UserPreferences) => {
     console.log("Applying preferences:", prefs);
     
-    // Appliquer le thème
+    // Apply theme
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(prefs.theme);
     
-    // Appliquer la taille de police
+    // Apply font size
     const fontSize = getFontSize(prefs.font_size);
     document.documentElement.style.fontSize = fontSize;
     document.body.style.fontSize = fontSize;
     
-    // Appliquer la langue
+    // Apply language
     document.documentElement.lang = prefs.language;
     
-    // Appliquer le mode focus
+    // Apply focus mode
     if (prefs.focus_mode) {
       document.body.classList.add('focus-mode');
     } else {
       document.body.classList.remove('focus-mode');
     }
+
+    // Store in localStorage for immediate access on page refresh
+    localStorage.setItem('userPreferences', JSON.stringify(prefs));
   };
 
   const getFontSize = (size: string): string => {
@@ -167,6 +170,16 @@ export default function Settings() {
   const handleSave = async () => {
     await updatePreferencesMutation.mutateAsync(preferences);
   };
+
+  // Load preferences from localStorage on initial mount
+  useEffect(() => {
+    const storedPrefs = localStorage.getItem('userPreferences');
+    if (storedPrefs) {
+      const parsedPrefs = JSON.parse(storedPrefs);
+      setPreferences(parsedPrefs);
+      applyPreferences(parsedPrefs);
+    }
+  }, []);
 
   if (isLoading) {
     return (
