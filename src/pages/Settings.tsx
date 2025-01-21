@@ -4,7 +4,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -52,21 +52,22 @@ export default function Settings() {
 
       return data;
     },
-    retry: false,
-    onSuccess: (data) => {
-      if (data) {
-        console.log("Preferences loaded:", data);
-        setPreferences(data);
-        applyPreferences(data);
+    meta: {
+      onSuccess: (data: UserPreferences) => {
+        if (data) {
+          console.log("Preferences loaded:", data);
+          setPreferences(data);
+          applyPreferences(data);
+        }
+      },
+      onError: (error: Error) => {
+        console.error('Error loading preferences:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de charger vos préférences",
+        });
       }
-    },
-    onError: (error) => {
-      console.error('Error loading preferences:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de charger vos préférences",
-      });
     }
   });
 
@@ -92,25 +93,26 @@ export default function Settings() {
         throw error;
       }
     },
-    onSuccess: () => {
-      console.log("Preferences saved successfully");
-      queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
-      toast({
-        title: "Paramètres sauvegardés",
-        description: "Vos préférences ont été mises à jour avec succès.",
-      });
-    },
-    onError: (error) => {
-      console.error('Error saving preferences:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
-      });
+    meta: {
+      onSuccess: () => {
+        console.log("Preferences saved successfully");
+        queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
+        toast({
+          title: "Paramètres sauvegardés",
+          description: "Vos préférences ont été mises à jour avec succès.",
+        });
+      },
+      onError: (error: Error) => {
+        console.error('Error saving preferences:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de sauvegarder les paramètres",
+        });
+      }
     }
   });
 
-  // Create default preferences if none exist
   const createDefaultPreferences = async () => {
     const defaultPreferences = {
       theme: 'light',
