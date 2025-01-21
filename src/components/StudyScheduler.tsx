@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const StudyScheduler = () => {
   const [title, setTitle] = useState("");
@@ -19,7 +18,6 @@ export const StudyScheduler = () => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const subjects = [
     { value: "math", label: "Mathématiques" },
@@ -90,9 +88,6 @@ export const StudyScheduler = () => {
         title: "Succès",
         description: "Votre session d'étude a été planifiée",
       });
-
-      // Invalide le cache pour forcer un rechargement
-      queryClient.invalidateQueries({ queryKey: ["study-sessions"] });
 
       // Reset form
       setTitle("");
