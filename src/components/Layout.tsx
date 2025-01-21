@@ -7,6 +7,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageSelector } from "./LanguageSelector";
 import { Footer } from "./Footer";
+import { usePreferences } from "@/hooks/use-preferences";
+import { useEffect } from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -14,6 +16,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isHomePage = location.pathname === "/";
   const isMobile = useIsMobile();
   const isAuthPage = location.pathname === "/auth";
+  const { loadPreferences } = usePreferences();
+
+  useEffect(() => {
+    console.log("Layout mounted, loading preferences...");
+    loadPreferences();
+  }, []);
 
   const handleBack = () => {
     try {

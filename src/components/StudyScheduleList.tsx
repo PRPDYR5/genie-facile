@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useStudySessions } from "@/hooks/use-study-sessions";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface StudySession {
   id: string;
@@ -17,47 +19,10 @@ interface StudySession {
 }
 
 export const StudyScheduleList = () => {
-  const [sessions, setSessions] = useState<StudySession[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: sessions, isLoading } = useStudySessions();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  const fetchSessions = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.log("Aucun utilisateur connecté");
-        setIsLoading(false);
-        return;
-      }
-
-      console.log("Récupération des sessions pour l'utilisateur:", user.id);
-      const { data, error } = await supabase
-        .from('study_schedules')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('start_time', { ascending: true });
-
-      if (error) {
-        console.error('Erreur lors de la récupération des sessions:', error);
-        throw error;
-      }
-
-      console.log("Sessions récupérées:", data);
-      setSessions(data || []);
-      
-    } catch (error) {
-      console.error('Erreur lors de la récupération des sessions:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les sessions d'étude",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const deleteSession = async (id: string) => {
     try {
       const { error } = await supabase
@@ -72,7 +37,8 @@ export const StudyScheduleList = () => {
         description: "Session supprimée avec succès",
       });
 
-      fetchSessions();
+      // Invalide le cache pour forcer un rechargement
+      queryClient.invalidateQueries({ queryKey: ["study-sessions"] });
     } catch (error) {
       console.error('Erreur lors de la suppression de la session:', error);
       toast({
@@ -83,10 +49,8 @@ export const StudyScheduleList = () => {
     }
   };
 
+  // Mise en place des notifications
   useEffect(() => {
-    fetchSessions();
-    
-    // Mise en place des notifications
     if ('Notification' in window) {
       Notification.requestPermission();
     }
@@ -94,7 +58,7 @@ export const StudyScheduleList = () => {
     // Vérification des sessions toutes les minutes
     const interval = setInterval(() => {
       const now = new Date();
-      sessions.forEach(session => {
+      sessions?.forEach(session => {
         const startTime = new Date(session.start_time);
         const timeDiff = startTime.getTime() - now.getTime();
         
@@ -124,7 +88,7 @@ export const StudyScheduleList = () => {
     );
   }
 
-  if (sessions.length === 0) {
+  if (!sessions || sessions.length === 0) {
     return (
       <Card className="mt-6 glass">
         <CardContent className="pt-6">

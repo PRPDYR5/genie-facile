@@ -1,13 +1,13 @@
 import { Layout } from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { ThemeSettings } from "@/components/settings/ThemeSettings";
+import { FontSizeSettings } from "@/components/settings/FontSizeSettings";
+import { LanguageSettings } from "@/components/settings/LanguageSettings";
+import { FocusModeSettings } from "@/components/settings/FocusModeSettings";
 
 type UserPreferences = {
   theme: string;
@@ -28,11 +28,12 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    console.log("Settings component mounted, loading user preferences...");
     loadUserPreferences();
   }, []);
 
-  // Appliquer les préférences dès qu'elles changent
   useEffect(() => {
+    console.log("Applying preferences:", preferences);
     applyPreferences(preferences);
   }, [preferences]);
 
@@ -51,7 +52,6 @@ export default function Settings() {
         return;
       }
 
-      console.log("User found, fetching preferences...");
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
@@ -68,7 +68,6 @@ export default function Settings() {
         setPreferences(data);
         applyPreferences(data);
       } else {
-        // Si aucune préférence n'existe, créer des préférences par défaut
         const defaultPreferences = {
           theme: 'light',
           font_size: 'medium',
@@ -79,6 +78,11 @@ export default function Settings() {
       }
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger vos préférences",
+      });
     } finally {
       setLoading(false);
     }
@@ -87,25 +91,24 @@ export default function Settings() {
   const applyPreferences = (prefs: UserPreferences) => {
     console.log("Applying preferences:", prefs);
     
-    // Appliquer le thème
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(prefs.theme);
+    localStorage.setItem('theme', prefs.theme);
     
-    // Appliquer la taille de police
     const fontSize = getFontSize(prefs.font_size);
     document.documentElement.style.fontSize = fontSize;
     document.body.style.fontSize = fontSize;
+    localStorage.setItem('fontSize', prefs.font_size);
     
-    // Appliquer la langue
     document.documentElement.lang = prefs.language;
+    localStorage.setItem('language', prefs.language);
     
-    // Appliquer le mode focus
     if (prefs.focus_mode) {
-      console.log('Focus mode enabled');
       document.body.classList.add('focus-mode');
     } else {
       document.body.classList.remove('focus-mode');
     }
+    localStorage.setItem('focusMode', prefs.focus_mode.toString());
   };
 
   const getFontSize = (size: string): string => {
@@ -180,93 +183,25 @@ export default function Settings() {
       <div className="space-y-8 animate-fade-in">
         <h1 className="text-4xl font-bold gradient-text">Paramètres</h1>
         
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-[#9b87f5]">Thème</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup 
-              value={preferences.theme} 
-              onValueChange={(value) => setPreferences(prev => ({ ...prev, theme: value }))}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="light" id="light" />
-                <Label htmlFor="light">Clair</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="dark" id="dark" />
-                <Label htmlFor="dark">Sombre</Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
+        <ThemeSettings 
+          theme={preferences.theme}
+          onThemeChange={(value) => setPreferences(prev => ({ ...prev, theme: value }))}
+        />
 
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-[#9b87f5]">Taille du texte</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup 
-              value={preferences.font_size} 
-              onValueChange={(value) => setPreferences(prev => ({ ...prev, font_size: value }))}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="small" id="small" />
-                <Label htmlFor="small">Petit</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="medium" id="medium" />
-                <Label htmlFor="medium">Moyen</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="large" id="large" />
-                <Label htmlFor="large">Grand</Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
+        <FontSizeSettings 
+          fontSize={preferences.font_size}
+          onFontSizeChange={(value) => setPreferences(prev => ({ ...prev, font_size: value }))}
+        />
 
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-[#9b87f5]">Langue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup 
-              value={preferences.language} 
-              onValueChange={(value: 'fr' | 'en') => setPreferences(prev => ({ ...prev, language: value }))}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="fr" id="fr" />
-                <Label htmlFor="fr">Français</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="en" id="en" />
-                <Label htmlFor="en">English</Label>
-              </div>
-            </RadioGroup>
-          </CardContent>
-        </Card>
+        <LanguageSettings 
+          language={preferences.language}
+          onLanguageChange={(value) => setPreferences(prev => ({ ...prev, language: value }))}
+        />
 
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-[#9b87f5]">Mode Focus</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4">
-              <Switch
-                checked={preferences.focus_mode}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, focus_mode: checked }))}
-              />
-              <Label>Activer le mode focus</Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Le mode focus désactive les notifications pour vous aider à rester concentré.
-            </p>
-          </CardContent>
-        </Card>
+        <FocusModeSettings 
+          focusMode={preferences.focus_mode}
+          onFocusModeChange={(checked) => setPreferences(prev => ({ ...prev, focus_mode: checked }))}
+        />
 
         <Button 
           onClick={() => handleSave()}
