@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 type UserPreferences = {
   theme: string;
@@ -23,35 +24,21 @@ export default function Settings() {
     language: 'fr',
     focus_mode: false
   });
+  
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    loadUserPreferences();
-  }, []);
-
-  // Appliquer les préférences dès qu'elles changent
-  useEffect(() => {
-    applyPreferences(preferences);
-  }, [preferences]);
-
-  const loadUserPreferences = async () => {
-    try {
-      console.log("Loading user preferences...");
+  // Fetch user preferences
+  const { data: userPreferences, isLoading } = useQuery({
+    queryKey: ['userPreferences'],
+    queryFn: async () => {
+      console.log("Fetching user preferences...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.error("No user found");
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Vous devez être connecté pour accéder aux paramètres",
-        });
-        return;
+        throw new Error("User not authenticated");
       }
 
-      console.log("User found, fetching preferences...");
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
@@ -59,30 +46,87 @@ export default function Settings() {
         .single();
 
       if (error) {
-        console.error('Error loading preferences:', error);
-        return;
+        console.error('Error fetching preferences:', error);
+        throw error;
       }
 
+      return data;
+    },
+    retry: false,
+    onSuccess: (data) => {
       if (data) {
         console.log("Preferences loaded:", data);
         setPreferences(data);
         applyPreferences(data);
-      } else {
-        // Si aucune préférence n'existe, créer des préférences par défaut
-        const defaultPreferences = {
-          theme: 'light',
-          font_size: 'medium',
-          language: 'fr' as const,
-          focus_mode: false
-        };
-        await handleSave(defaultPreferences);
       }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+    },
+    onError: (error) => {
+      console.error('Error loading preferences:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger vos préférences",
+      });
     }
+  });
+
+  // Update user preferences mutation
+  const updatePreferencesMutation = useMutation({
+    mutationFn: async (newPreferences: UserPreferences) => {
+      console.log("Saving preferences:", newPreferences);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          ...newPreferences,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      console.log("Preferences saved successfully");
+      queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
+      toast({
+        title: "Paramètres sauvegardés",
+        description: "Vos préférences ont été mises à jour avec succès.",
+      });
+    },
+    onError: (error) => {
+      console.error('Error saving preferences:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de sauvegarder les paramètres",
+      });
+    }
+  });
+
+  // Create default preferences if none exist
+  const createDefaultPreferences = async () => {
+    const defaultPreferences = {
+      theme: 'light',
+      font_size: 'medium',
+      language: 'fr' as const,
+      focus_mode: false
+    };
+    await updatePreferencesMutation.mutateAsync(defaultPreferences);
   };
+
+  // Initialize preferences
+  useEffect(() => {
+    if (!isLoading && !userPreferences) {
+      createDefaultPreferences();
+    }
+  }, [isLoading, userPreferences]);
 
   const applyPreferences = (prefs: UserPreferences) => {
     console.log("Applying preferences:", prefs);
@@ -101,7 +145,6 @@ export default function Settings() {
     
     // Appliquer le mode focus
     if (prefs.focus_mode) {
-      console.log('Focus mode enabled');
       document.body.classList.add('focus-mode');
     } else {
       document.body.classList.remove('focus-mode');
@@ -119,53 +162,11 @@ export default function Settings() {
     }
   };
 
-  const handleSave = async (prefsToSave = preferences) => {
-    try {
-      setSaving(true);
-      console.log("Saving preferences:", prefsToSave);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error("No user found during save");
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Vous devez être connecté pour sauvegarder les paramètres",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          ...prefsToSave,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error saving preferences:', error);
-        throw error;
-      }
-
-      console.log("Preferences saved successfully");
-      toast({
-        title: "Paramètres sauvegardés",
-        description: "Vos préférences ont été mises à jour avec succès.",
-      });
-    } catch (error) {
-      console.error('Error saving preferences:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
-      });
-    } finally {
-      setSaving(false);
-    }
+  const handleSave = async () => {
+    await updatePreferencesMutation.mutateAsync(preferences);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full">
@@ -269,11 +270,11 @@ export default function Settings() {
         </Card>
 
         <Button 
-          onClick={() => handleSave()}
-          disabled={saving}
+          onClick={handleSave}
+          disabled={updatePreferencesMutation.isPending}
           className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-white"
         >
-          {saving ? (
+          {updatePreferencesMutation.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Sauvegarde en cours...
