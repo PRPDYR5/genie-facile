@@ -103,8 +103,32 @@ export const usePreferences = () => {
         return data;
       }
 
-      console.log("Aucune préférence trouvée dans Supabase");
-      return null;
+      // Si aucune préférence n'existe, créer les préférences par défaut
+      const defaultPrefs = {
+        theme: 'light',
+        font_size: 'medium',
+        language: 'fr' as const,
+        focus_mode: false,
+      };
+
+      const { data: newPrefs, error: insertError } = await supabase
+        .from('user_preferences')
+        .insert([
+          { 
+            user_id: user.id,
+            ...defaultPrefs
+          }
+        ])
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Erreur lors de la création des préférences par défaut:', insertError);
+        throw insertError;
+      }
+
+      console.log("Préférences par défaut créées:", newPrefs);
+      return newPrefs;
     },
     initialData: loadLocalPreferences,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -119,16 +143,13 @@ export const usePreferences = () => {
         throw new Error("Utilisateur non authentifié");
       }
 
-      const currentPrefs = queryClient.getQueryData<UserPreferences>(['preferences']);
-      const updatedPrefs = { ...currentPrefs, ...newPrefs };
-
       const { data, error } = await supabase
         .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          ...updatedPrefs,
+        .update({
+          ...newPrefs,
           updated_at: new Date().toISOString()
         })
+        .eq('user_id', user.id)
         .select()
         .single();
 
