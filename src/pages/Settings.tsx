@@ -4,168 +4,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-
-type UserPreferences = {
-  theme: string;
-  font_size: string;
-  language: 'fr' | 'en';
-  focus_mode: boolean;
-}
+import { usePreferences, type UserPreferences } from "@/hooks/use-preferences";
 
 export default function Settings() {
-  const [preferences, setPreferences] = useState<UserPreferences>({
-    theme: 'light',
-    font_size: 'medium',
-    language: 'fr',
-    focus_mode: false
-  });
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { preferences, isLoading, updatePreferences } = usePreferences();
 
-  useEffect(() => {
-    loadUserPreferences();
-  }, []);
-
-  // Appliquer les préférences dès qu'elles changent
-  useEffect(() => {
-    applyPreferences(preferences);
-  }, [preferences]);
-
-  const loadUserPreferences = async () => {
-    try {
-      console.log("Loading user preferences...");
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.error("No user found");
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Vous devez être connecté pour accéder aux paramètres",
-        });
-        return;
-      }
-
-      console.log("User found, fetching preferences...");
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error loading preferences:', error);
-        return;
-      }
-
-      if (data) {
-        console.log("Preferences loaded:", data);
-        setPreferences(data);
-        applyPreferences(data);
-      } else {
-        // Si aucune préférence n'existe, créer des préférences par défaut
-        const defaultPreferences = {
-          theme: 'light',
-          font_size: 'medium',
-          language: 'fr' as const,
-          focus_mode: false
-        };
-        await handleSave(defaultPreferences);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSave = async (newPrefs: UserPreferences) => {
+    updatePreferences(newPrefs);
   };
 
-  const applyPreferences = (prefs: UserPreferences) => {
-    console.log("Applying preferences:", prefs);
-    
-    // Appliquer le thème
-    document.documentElement.classList.remove('dark', 'light');
-    document.documentElement.classList.add(prefs.theme);
-    
-    // Appliquer la taille de police
-    const fontSize = getFontSize(prefs.font_size);
-    document.documentElement.style.fontSize = fontSize;
-    document.body.style.fontSize = fontSize;
-    
-    // Appliquer la langue
-    document.documentElement.lang = prefs.language;
-    
-    // Appliquer le mode focus
-    if (prefs.focus_mode) {
-      console.log('Focus mode enabled');
-      document.body.classList.add('focus-mode');
-    } else {
-      document.body.classList.remove('focus-mode');
-    }
-  };
-
-  const getFontSize = (size: string): string => {
-    switch (size) {
-      case 'small':
-        return '14px';
-      case 'large':
-        return '18px';
-      default:
-        return '16px';
-    }
-  };
-
-  const handleSave = async (prefsToSave = preferences) => {
-    try {
-      setSaving(true);
-      console.log("Saving preferences:", prefsToSave);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error("No user found during save");
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Vous devez être connecté pour sauvegarder les paramètres",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          ...prefsToSave,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error saving preferences:', error);
-        throw error;
-      }
-
-      console.log("Preferences saved successfully");
-      toast({
-        title: "Paramètres sauvegardés",
-        description: "Vos préférences ont été mises à jour avec succès.",
-      });
-    } catch (error) {
-      console.error('Error saving preferences:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full">
@@ -186,8 +35,8 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              value={preferences.theme} 
-              onValueChange={(value) => setPreferences(prev => ({ ...prev, theme: value }))}
+              value={preferences?.theme ?? 'light'} 
+              onValueChange={(value) => handleSave({ ...preferences, theme: value })}
               className="space-y-4"
             >
               <div className="flex items-center space-x-2">
@@ -208,8 +57,8 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              value={preferences.font_size} 
-              onValueChange={(value) => setPreferences(prev => ({ ...prev, font_size: value }))}
+              value={preferences?.font_size ?? 'medium'} 
+              onValueChange={(value) => handleSave({ ...preferences, font_size: value })}
               className="space-y-4"
             >
               <div className="flex items-center space-x-2">
@@ -234,8 +83,8 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              value={preferences.language} 
-              onValueChange={(value: 'fr' | 'en') => setPreferences(prev => ({ ...prev, language: value }))}
+              value={preferences?.language ?? 'fr'} 
+              onValueChange={(value: 'fr' | 'en') => handleSave({ ...preferences, language: value })}
               className="space-y-4"
             >
               <div className="flex items-center space-x-2">
@@ -257,8 +106,8 @@ export default function Settings() {
           <CardContent>
             <div className="flex items-center space-x-4">
               <Switch
-                checked={preferences.focus_mode}
-                onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, focus_mode: checked }))}
+                checked={preferences?.focus_mode ?? false}
+                onCheckedChange={(checked) => handleSave({ ...preferences, focus_mode: checked })}
               />
               <Label>Activer le mode focus</Label>
             </div>
@@ -267,21 +116,6 @@ export default function Settings() {
             </p>
           </CardContent>
         </Card>
-
-        <Button 
-          onClick={() => handleSave()}
-          disabled={saving}
-          className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-white"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sauvegarde en cours...
-            </>
-          ) : (
-            'Sauvegarder les paramètres'
-          )}
-        </Button>
       </div>
     </Layout>
   );
