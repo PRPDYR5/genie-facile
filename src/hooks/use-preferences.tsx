@@ -12,6 +12,13 @@ export type UserPreferences = {
   focus_mode: boolean;
 }
 
+const defaultPreferences: UserPreferences = {
+  theme: 'light',
+  font_size: 'medium',
+  language: 'fr',
+  focus_mode: false,
+};
+
 export const usePreferences = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -40,11 +47,6 @@ export const usePreferences = () => {
       console.log("Préférences sauvegardées avec succès dans le localStorage");
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des préférences locales:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les préférences localement",
-      });
     }
   };
 
@@ -83,8 +85,8 @@ export const usePreferences = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("Aucun utilisateur trouvé");
-        return null;
+        console.log("Aucun utilisateur trouvé, utilisation des préférences par défaut");
+        return defaultPreferences;
       }
 
       const { data, error } = await supabase
@@ -103,24 +105,15 @@ export const usePreferences = () => {
         return data;
       }
 
-      // Si aucune préférence n'existe, créer les préférences par défaut
-      const defaultPrefs = {
-        theme: 'light',
-        font_size: 'medium',
-        language: 'fr' as const,
-        focus_mode: false,
-      };
-
+      console.log("Création des préférences par défaut pour l'utilisateur");
       const { data: newPrefs, error: insertError } = await supabase
         .from('user_preferences')
-        .insert([
-          { 
-            user_id: user.id,
-            ...defaultPrefs
-          }
-        ])
+        .insert([{ 
+          user_id: user.id,
+          ...defaultPreferences
+        }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (insertError) {
         console.error('Erreur lors de la création des préférences par défaut:', insertError);
@@ -128,9 +121,12 @@ export const usePreferences = () => {
       }
 
       console.log("Préférences par défaut créées:", newPrefs);
-      return newPrefs;
+      return newPrefs || defaultPreferences;
     },
-    initialData: loadLocalPreferences,
+    initialData: () => {
+      const localPrefs = loadLocalPreferences();
+      return localPrefs || defaultPreferences;
+    },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
@@ -151,7 +147,7 @@ export const usePreferences = () => {
         })
         .eq('user_id', user.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Erreur lors de la mise à jour des préférences:', error);
@@ -162,14 +158,16 @@ export const usePreferences = () => {
       return data;
     },
     onSuccess: (data) => {
-      console.log("Mise à jour réussie, application des nouvelles préférences");
-      queryClient.setQueryData(['preferences'], data);
-      saveLocalPreferences(data);
-      applyPreferences(data);
-      toast({
-        title: "Succès",
-        description: "Vos préférences ont été mises à jour",
-      });
+      if (data) {
+        console.log("Mise à jour réussie, application des nouvelles préférences");
+        queryClient.setQueryData(['preferences'], data);
+        saveLocalPreferences(data);
+        applyPreferences(data);
+        toast({
+          title: "Succès",
+          description: "Vos préférences ont été mises à jour",
+        });
+      }
     },
     onError: (error) => {
       console.error('Erreur lors de la sauvegarde des préférences:', error);
