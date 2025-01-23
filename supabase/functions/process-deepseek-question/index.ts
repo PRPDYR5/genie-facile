@@ -28,56 +28,31 @@ serve(async (req) => {
     const { question, level, subject } = await req.json();
     console.log(`Processing ${subject} question for ${level}:`, question);
 
-    if (!DEEPSEEK_API_KEY) {
-      console.error('DEEPSEEK_API_KEY is not set');
-      throw new Error('API key configuration error');
-    }
-
-    const payload = {
-      model: 'deepseek-chat',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `En tant qu'élève de ${level} en série F3, pour le cours de ${subject}: ${question}` }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    };
-
-    console.log('Sending request to Deepseek API with payload:', JSON.stringify(payload));
-
     const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: `En tant qu'élève de ${level} en série F3, pour le cours de ${subject}: ${question}` }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     });
 
-    const responseData = await response.text();
-    console.log('Deepseek API raw response:', responseData);
-
     if (!response.ok) {
-      console.error('Deepseek API error status:', response.status);
-      console.error('Deepseek API error response:', responseData);
-      throw new Error(`Deepseek API error: ${response.status}`);
+      const error = await response.json();
+      console.error('Deepseek API error:', error);
+      throw new Error('Failed to get response from Deepseek');
     }
 
-    let data;
-    try {
-      data = JSON.parse(responseData);
-    } catch (error) {
-      console.error('Failed to parse Deepseek API response:', error);
-      throw new Error('Invalid API response format');
-    }
-
-    if (!data.choices?.[0]?.message?.content) {
-      console.error('Unexpected API response format:', data);
-      throw new Error('Invalid API response structure');
-    }
-
+    const data = await response.json();
     const answer = data.choices[0].message.content;
-    console.log('Generated answer:', answer);
 
     return new Response(
       JSON.stringify({ answer, success: true }),
@@ -89,8 +64,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         error: 'Failed to process question',
-        details: error.message,
-        success: false
+        details: error.message
       }),
       {
         headers: CORS_HEADERS,
