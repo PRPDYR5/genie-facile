@@ -18,24 +18,34 @@ export function usePreferences() {
 
   // Fonction pour charger les préférences depuis le localStorage
   const loadLocalPreferences = (): UserPreferences | null => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error('Erreur lors du chargement des préférences locales:', error);
+      return null;
+    }
   };
 
   // Fonction pour sauvegarder les préférences dans le localStorage
   const saveLocalPreferences = (prefs: UserPreferences) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+      console.log("Préférences sauvegardées localement:", prefs);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde des préférences locales:', error);
+    }
   };
 
   // Charger les préférences depuis Supabase
   const { data: preferences, isLoading } = useQuery({
     queryKey: ['preferences'],
     queryFn: async () => {
-      console.log("Fetching user preferences from Supabase...");
+      console.log("Chargement des préférences depuis Supabase...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("No user found, using default preferences");
+        console.log("Aucun utilisateur trouvé, utilisation des préférences par défaut");
         return null;
       }
 
@@ -46,19 +56,26 @@ export function usePreferences() {
         .single();
 
       if (error) {
-        console.error('Error fetching preferences:', error);
+        console.error('Erreur lors du chargement des préférences:', error);
         throw error;
       }
 
-      console.log("Preferences loaded:", data);
+      console.log("Préférences chargées:", data);
       return data;
     },
     meta: {
       onSuccess: (data) => {
         if (data) {
-          console.log("Applying fetched preferences");
+          console.log("Application des préférences chargées");
           saveLocalPreferences(data);
           applyPreferences(data);
+        }
+      },
+      onError: (error) => {
+        console.error("Erreur lors du chargement des préférences:", error);
+        const localPrefs = loadLocalPreferences();
+        if (localPrefs) {
+          applyPreferences(localPrefs);
         }
       }
     }
@@ -67,11 +84,11 @@ export function usePreferences() {
   // Mutation pour mettre à jour les préférences
   const { mutate: updatePreferences } = useMutation({
     mutationFn: async (newPrefs: UserPreferences) => {
-      console.log("Updating preferences:", newPrefs);
+      console.log("Mise à jour des préférences:", newPrefs);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        throw new Error("User not authenticated");
+        throw new Error("Utilisateur non authentifié");
       }
 
       const { error } = await supabase
@@ -87,7 +104,7 @@ export function usePreferences() {
     },
     meta: {
       onSuccess: (newPrefs) => {
-        console.log("Preferences updated successfully");
+        console.log("Préférences mises à jour avec succès");
         queryClient.setQueryData(['preferences'], newPrefs);
         saveLocalPreferences(newPrefs);
         applyPreferences(newPrefs);
@@ -97,7 +114,7 @@ export function usePreferences() {
         });
       },
       onError: (error) => {
-        console.error('Error saving preferences:', error);
+        console.error('Erreur lors de la sauvegarde des préférences:', error);
         toast({
           variant: "destructive",
           title: "Erreur",
@@ -109,7 +126,7 @@ export function usePreferences() {
 
   // Appliquer les préférences
   const applyPreferences = (prefs: UserPreferences) => {
-    console.log("Applying preferences:", prefs);
+    console.log("Application des préférences:", prefs);
     
     // Appliquer le thème
     document.documentElement.classList.remove('dark', 'light');
@@ -133,7 +150,7 @@ export function usePreferences() {
   useEffect(() => {
     const localPrefs = loadLocalPreferences();
     if (localPrefs) {
-      console.log("Applying local preferences on startup");
+      console.log("Application des préférences locales au démarrage");
       applyPreferences(localPrefs);
     }
   }, []);
