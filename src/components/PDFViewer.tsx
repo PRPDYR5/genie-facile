@@ -39,14 +39,14 @@ export function PDFViewer({ url }: PDFViewerProps) {
 
   if (!url) {
     return (
-      <div className={`w-full ${isMobile ? 'aspect-[4/3]' : 'aspect-[16/9]'} bg-black/20 rounded-xl overflow-hidden flex items-center justify-center`}>
+      <div className={`w-full ${isMobile ? 'h-[80vh]' : 'h-[85vh]'} bg-black/20 rounded-xl overflow-hidden flex items-center justify-center`}>
         <p className="text-[#9b87f5]">Veuillez sélectionner un cours</p>
       </div>
     );
   }
 
   return (
-    <div className={`w-full ${isMobile ? 'aspect-[4/3]' : 'aspect-[16/9]'} bg-black/20 rounded-xl overflow-hidden`}>
+    <div className={`w-full ${isMobile ? 'h-[80vh]' : 'h-[85vh]'} bg-black/20 rounded-xl overflow-hidden`}>
       {loading ? (
         <div className="flex items-center justify-center h-full">
           <p className="text-[#9b87f5]">Chargement du PDF...</p>
