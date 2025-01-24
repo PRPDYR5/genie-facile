@@ -35,12 +35,12 @@ export function UserDashboard() {
   ];
 
   return (
-    <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'}`}>
+    <div className={`grid ${isMobile ? 'grid-cols-1 gap-4 px-2' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'} w-full max-w-7xl mx-auto`}>
       {dashboardItems.map((item) => (
         <div
           key={item.title}
           onClick={item.onClick}
-          className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+          className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer w-full"
         >
           <Card className="h-full glass card-hover border-[#9b87f5]/20">
             <CardHeader className={isMobile ? 'p-4' : 'p-6'}>
