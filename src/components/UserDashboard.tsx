@@ -35,25 +35,25 @@ export function UserDashboard() {
   ];
 
   return (
-    <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}`}>
+    <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'}`}>
       {dashboardItems.map((item) => (
         <div
           key={item.title}
           onClick={item.onClick}
           className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer"
         >
-          <Card className="h-full glass card-hover">
+          <Card className="h-full glass card-hover border-[#9b87f5]/20">
             <CardHeader className={isMobile ? 'p-4' : 'p-6'}>
               <div className="flex items-center gap-3">
-                <div className="bg-[#9b87f5]/20 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center">
+                <div className="bg-[#9b87f5]/10 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center">
                   <item.icon className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-[#9b87f5]`} />
                 </div>
-                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} text-[#9b87f5]`}>
+                <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'} text-[#9b87f5] font-medium`}>
                   {item.title}
                 </CardTitle>
               </div>
             </CardHeader>
-            <CardContent className={isMobile ? 'p-4 pt-0' : 'p-6'}>
+            <CardContent className={`${isMobile ? 'p-4 pt-0' : 'p-6 pt-0'}`}>
               <p className={`${isMobile ? 'text-sm' : 'text-base'} text-[#9b87f5]/70`}>
                 {item.description}
               </p>

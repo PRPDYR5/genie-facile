@@ -29,10 +29,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex flex-col w-full bg-background">
         <div className="flex flex-1">
           <AppSidebar />
-          <main className={`flex-1 ${isMobile ? 'p-3' : 'p-6'}`}>
-            <div className="container max-w-full">
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="flex items-center gap-4">
+          <main className="flex-1">
+            <div className="container max-w-full px-2 sm:px-4">
+              <div className="flex items-center justify-between gap-2 mb-4 py-2">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {!isHomePage && (
                     <Button 
                       variant="ghost" 
@@ -46,7 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <SidebarTrigger />
                   
                   {/* Social Media Links */}
-                  <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-3">
                     <a
                       href="https://chat.whatsapp.com/KEGeUBRJdSP5Ia35Wy5fdu"
                       target="_blank"
@@ -68,7 +68,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {/* Language Selector */}
                   <LanguageSelector />
 
@@ -81,17 +81,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           className="hover:bg-[#9b87f5]/10 text-[#9b87f5]"
                           size={isMobile ? "sm" : "default"}
                         >
-                          <LogIn className="mr-2 h-4 w-4" />
-                          Se connecter
+                          <LogIn className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} mr-1 sm:mr-2`} />
+                          <span className="hidden sm:inline">Se connecter</span>
                         </Button>
                       </Link>
                       <Link to="/auth?mode=signup">
                         <Button
-                          className="bg-[#9b87f5] hover:bg-[#8b77e5] text-[#1A1F2C]"
+                          className="bg-[#9b87f5] hover:bg-[#8b77e5] text-white"
                           size={isMobile ? "sm" : "default"}
                         >
-                          <UserPlus className="mr-2 h-4 w-4" />
-                          Créer un compte
+                          <UserPlus className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} mr-1 sm:mr-2`} />
+                          <span className="hidden sm:inline">Créer un compte</span>
                         </Button>
                       </Link>
                     </div>

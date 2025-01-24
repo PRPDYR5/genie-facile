@@ -10,33 +10,33 @@ const Index = () => {
   
   return (
     <Layout>
-      <div className="space-y-6 sm:space-y-16 animate-fade-in px-2 sm:px-0">
+      <div className="space-y-4 sm:space-y-16 animate-fade-in">
         {/* Hero Section */}
-        <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-4 sm:py-16">
-          <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl sm:text-6xl'} font-bold font-poppins gradient-text animate-float`}>
+        <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-4 sm:py-16 px-3 sm:px-6">
+          <h1 className={`${isMobile ? 'text-3xl' : 'text-4xl sm:text-6xl'} font-bold font-poppins gradient-text animate-float leading-tight`}>
             Un apprentissage simplifié, pour un futur brillant
           </h1>
-          <p className={`${isMobile ? 'text-base px-2' : 'text-lg sm:text-2xl px-4'} text-[#9b87f5]/80 font-roboto leading-relaxed`}>
+          <p className={`${isMobile ? 'text-base px-1' : 'text-lg sm:text-2xl px-4'} text-[#9b87f5]/80 font-roboto leading-relaxed max-w-2xl mx-auto`}>
             Génie Facile est votre professeur virtuel, prêt à vous accompagner dans vos études techniques de la série F3
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 sm:pt-8 px-2 sm:px-4">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4 sm:pt-8">
             <a
               href="/courses/summaries"
-              className={`${isMobile ? 'text-sm px-4 py-2' : 'px-6 py-3 sm:px-8 sm:py-4'} bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg shadow-lg shadow-[#9b87f5]/20`}
+              className={`${isMobile ? 'text-base px-4 py-3' : 'px-6 py-3 sm:px-8 sm:py-4'} bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-xl hover:scale-105 transition-all duration-300 font-medium shadow-lg shadow-[#9b87f5]/20`}
             >
               Voir les résumés
             </a>
             <a
               href="/courses/qa"
-              className={`${isMobile ? 'text-sm px-4 py-2' : 'px-6 py-3 sm:px-8 sm:py-4'} bg-[#9b87f5]/10 border border-[#9b87f5]/20 text-[#9b87f5] rounded-xl hover:scale-105 transition-all duration-300 font-medium text-base sm:text-lg backdrop-blur-sm`}
+              className={`${isMobile ? 'text-base px-4 py-3' : 'px-6 py-3 sm:px-8 sm:py-4'} bg-[#9b87f5]/10 border border-[#9b87f5]/20 text-[#9b87f5] rounded-xl hover:scale-105 transition-all duration-300 font-medium backdrop-blur-sm`}
             >
               Questions-réponses
             </a>
           </div>
         </div>
 
-        {/* Search and Dashboard Section */}
-        <div className={`space-y-4 sm:space-y-8 ${isMobile ? 'px-1' : 'px-2'}`}>
+        {/* Dashboard Section */}
+        <div className={`space-y-6 ${isMobile ? 'px-2' : 'px-4'}`}>
           <UserDashboard />
           <StudyScheduler />
           <StudyScheduleList />
