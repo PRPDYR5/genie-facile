@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Search, Settings, GraduationCap } from "lucide-react";
+import { FileText, Search, Settings, GraduationCap, BookMarked, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -21,6 +21,18 @@ export function UserDashboard() {
       onClick: () => navigate("/courses/exercises")
     },
     {
+      title: "BAC",
+      icon: BookMarked,
+      description: "Accédez aux examens du BAC",
+      onClick: () => navigate("/bac")
+    },
+    {
+      title: "Documents",
+      icon: Book,
+      description: "Consultez les annales et documents",
+      onClick: () => navigate("/documents")
+    },
+    {
       title: "Recherche avancée",
       icon: Search,
       description: "Recherchez des contenus spécifiques",
@@ -35,7 +47,7 @@ export function UserDashboard() {
   ];
 
   return (
-    <div className={`grid ${isMobile ? 'grid-cols-1 gap-4 px-2' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'} w-full max-w-7xl mx-auto`}>
+    <div className={`grid ${isMobile ? 'grid-cols-1 gap-4 px-2' : 'sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'} w-full max-w-7xl mx-auto`}>
       {dashboardItems.map((item) => (
         <div
           key={item.title}

@@ -10,7 +10,8 @@ import {
   LogOut, 
   GraduationCap,
   BookMarked,
-  FileText
+  FileText,
+  Book
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,7 +75,7 @@ export function AppSidebar() {
             </Link>
             <Link to="/documents">
               <Button variant="ghost" className="w-full justify-start">
-                <FileText className="mr-2 h-4 w-4" />
+                <Book className="mr-2 h-4 w-4" />
                 Annales et Documents
               </Button>
             </Link>
