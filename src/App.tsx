@@ -7,11 +7,6 @@ import QA from "@/pages/QA";
 import Search from "@/pages/Search";
 import Settings from "@/pages/Settings";
 import Summaries from "@/pages/Summaries";
-import Privacy from "@/pages/Privacy";
-import Terms from "@/pages/Terms";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import Blog from "@/pages/Blog";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
@@ -22,11 +17,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/blog" element={<Blog />} />
         <Route
           path="/courses"
           element={
