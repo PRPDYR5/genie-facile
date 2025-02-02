@@ -18,7 +18,14 @@ const Exercises = () => {
   const subjects = [
     { value: "math", label: "Mathématiques" },
     { value: "physics", label: "Sciences Physiques" },
-    { value: "info", label: "Informatique" }
+    { value: "info", label: "Informatique" },
+    { value: "technologie", label: "Technologie" },
+    { value: "electrotechnique", label: "Électrotechnique" },
+    { value: "mesure_essai", label: "Mesure Essai" },
+    { value: "tpa", label: "Travaux Pratiques Atelier" },
+    { value: "cm", label: "Construction Mécanique" },
+    { value: "automatisme", label: "Automatisme" },
+    { value: "metallurgie", label: "Métallurgie" }
   ];
 
   const exercises = [

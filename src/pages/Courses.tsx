@@ -20,6 +20,34 @@ const courses = {
     info: {
       name: "Informatique",
       url: null
+    },
+    technologie: {
+      name: "Technologie",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique",
+      url: null
+    },
+    automatisme: {
+      name: "Automatisme",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie",
+      url: null
     }
   },
   premiere: {
@@ -34,6 +62,34 @@ const courses = {
     info: {
       name: "Informatique",
       url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing"
+    },
+    technologie: {
+      name: "Technologie",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique",
+      url: null
+    },
+    automatisme: {
+      name: "Automatisme",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie",
+      url: null
     }
   },
   terminale: {
@@ -48,6 +104,34 @@ const courses = {
     info: {
       name: "Informatique",
       url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing"
+    },
+    technologie: {
+      name: "Technologie",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique",
+      url: null
+    },
+    automatisme: {
+      name: "Automatisme",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie",
+      url: null
     }
   }
 };
