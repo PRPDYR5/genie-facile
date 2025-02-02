@@ -26,6 +26,34 @@ const coursesData = {
     info: {
       name: "Informatique Première",
       url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing"
+    },
+    technologie: {
+      name: "Technologie Première",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique Première",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai Première",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier Première",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique Première",
+      url: null
+    },
+    automatisme: {
+      name: "Automatisme Première",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie Première",
+      url: null
     }
   },
   terminale: {
@@ -40,13 +68,41 @@ const coursesData = {
     info: {
       name: "Informatique Terminale",
       url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing"
+    },
+    technologie: {
+      name: "Technologie Terminale",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique Terminale",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai Terminale",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier Terminale",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique Terminale",
+      url: null
+    },
+    automatisme: {
+      name: "Automatisme Terminale",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie Terminale",
+      url: null
     }
   }
 };
 
 interface SearchResult {
   name: string;
-  url: string;
+  url: string | null;
   level: string;
   subject: string;
 }

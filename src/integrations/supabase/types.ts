@@ -169,7 +169,17 @@ export type Database = {
     Enums: {
       education_level: "seconde" | "premiere" | "terminale"
       level_type: "seconde" | "premiere" | "terminale"
-      subject_type: "math" | "physics" | "info"
+      subject_type:
+        | "math"
+        | "physics"
+        | "info"
+        | "technologie"
+        | "electrotechnique"
+        | "mesure_essai"
+        | "tpa"
+        | "cm"
+        | "automatisme"
+        | "metallurgie"
       supported_language: "fr" | "en"
     }
     CompositeTypes: {

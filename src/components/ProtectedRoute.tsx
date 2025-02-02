@@ -27,14 +27,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
             action: (
               <div className="flex gap-2 mt-2">
                 <Button 
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/auth", { state: { from: location.pathname } })}
                   variant="default"
                   size="sm"
                 >
                   Se connecter
                 </Button>
                 <Button
-                  onClick={() => navigate("/auth?mode=signup")}
+                  onClick={() => navigate("/auth?mode=signup", { state: { from: location.pathname } })}
                   variant="outline"
                   size="sm"
                 >
@@ -46,7 +46,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
           // Store the attempted URL
           sessionStorage.setItem('redirectUrl', location.pathname);
-          navigate("/auth");
+          navigate("/auth", { state: { from: location.pathname } });
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de l'authentification:", error);

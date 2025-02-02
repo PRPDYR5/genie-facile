@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type LoginFormData = {
   email: string;
@@ -15,6 +16,8 @@ type LoginFormData = {
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
   const form = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
@@ -30,6 +33,18 @@ export function LoginForm() {
         title: "Connexion réussie",
         description: "Vous êtes maintenant connecté",
       });
+
+      // Get the stored redirect URL or the one from location state
+      const redirectUrl = sessionStorage.getItem('redirectUrl') || 
+                         (location.state as any)?.from || 
+                         '/';
+      
+      // Clear the stored redirect URL
+      sessionStorage.removeItem('redirectUrl');
+      
+      // Redirect to the stored URL or home
+      console.log("Redirection vers:", redirectUrl);
+      navigate(redirectUrl);
     } catch (error) {
       console.error("Erreur de connexion:", error);
       toast({
