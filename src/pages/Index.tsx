@@ -66,7 +66,7 @@ const Index = () => {
             transition={{ delay: 0.5, duration: 0.8 }}
             className={`${isMobile ? 'text-base px-2' : 'text-lg sm:text-2xl px-4'} text-[#9b87f5]/80 font-roboto leading-relaxed max-w-2xl mx-auto`}
           >
-            Génie Facile est votre professeur virtuel, prêt à vous accompagner dans vos études techniques de la série F3
+            Génie Facile est votre professeur virtuel, prêt à vous accompagner dans vos études techniques de la série F1 / F2 / F3 / F4 ET TI
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

@@ -44,6 +44,8 @@ export const usePreferences = () => {
     try {
       console.log("Sauvegarde des préférences locales:", prefs);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+      // Appliquer immédiatement les préférences après la sauvegarde
+      applyPreferences(prefs);
       console.log("Préférences sauvegardées avec succès dans le localStorage");
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des préférences locales:', error);
@@ -56,6 +58,7 @@ export const usePreferences = () => {
     // Thème
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(prefs.theme);
+    localStorage.setItem('theme', prefs.theme); // Sauvegarder le thème séparément
     
     // Taille de police
     const fontSize = {
@@ -179,8 +182,14 @@ export const usePreferences = () => {
     }
   });
 
-  // Appliquer les préférences au chargement
+  // Appliquer les préférences au chargement initial
   useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.classList.remove('dark', 'light');
+      document.documentElement.classList.add(savedTheme);
+    }
+    
     const localPrefs = loadLocalPreferences();
     if (localPrefs) {
       console.log("Application des préférences locales au démarrage");
