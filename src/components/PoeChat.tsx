@@ -16,10 +16,10 @@ export function PoeChat() {
   return (
     <div className="flex justify-end mb-4">
       <Card 
-        className="w-64 h-64 cursor-pointer hover:shadow-lg transition-shadow duration-200 relative group"
+        className="w-64 h-64 cursor-pointer hover:shadow-lg transition-shadow duration-200 relative group overflow-hidden"
         onClick={() => setIsOpen(true)}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-end justify-center pb-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-end justify-center pb-4 z-10">
           <div className="flex items-center gap-2 text-white">
             <MessageCircle className="h-5 w-5" />
             <span>Ouvrir le chat</span>
@@ -29,6 +29,10 @@ export function PoeChat() {
           src="/lovable-uploads/cd0f23ee-ff6e-4b14-ac2d-bb2c25f30827.png"
           alt="Chat avec Génie Facile"
           className="w-full h-full object-cover rounded-lg"
+          onError={(e) => {
+            console.error("Erreur de chargement de l'image Poe");
+            e.currentTarget.src = 'https://assets.poe.com/poe-logo.png';
+          }}
         />
       </Card>
 

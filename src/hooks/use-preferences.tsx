@@ -23,7 +23,7 @@ export const usePreferences = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const loadLocalPreferences = (): UserPreferences | null => {
+  const loadLocalPreferences = (): UserPreferences => {
     try {
       console.log("Chargement des préférences locales...");
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -32,11 +32,11 @@ export const usePreferences = () => {
         console.log("Préférences locales trouvées:", prefs);
         return prefs;
       }
-      console.log("Aucune préférence locale trouvée");
-      return null;
+      console.log("Aucune préférence locale trouvée, utilisation des valeurs par défaut");
+      return defaultPreferences;
     } catch (error) {
       console.error('Erreur lors du chargement des préférences locales:', error);
-      return null;
+      return defaultPreferences;
     }
   };
 
@@ -44,21 +44,20 @@ export const usePreferences = () => {
     try {
       console.log("Sauvegarde des préférences locales:", prefs);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-      // Appliquer immédiatement les préférences après la sauvegarde
+      localStorage.setItem('theme', prefs.theme); // Sauvegarde séparée du thème
       applyPreferences(prefs);
-      console.log("Préférences sauvegardées avec succès dans le localStorage");
+      console.log("Préférences sauvegardées avec succès");
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde des préférences locales:', error);
+      console.error('Erreur lors de la sauvegarde des préférences:', error);
     }
   };
 
   const applyPreferences = (prefs: UserPreferences) => {
     console.log("Application des préférences:", prefs);
     
-    // Thème
+    // Application du thème
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(prefs.theme);
-    localStorage.setItem('theme', prefs.theme); // Sauvegarder le thème séparément
     
     // Taille de police
     const fontSize = {
@@ -88,8 +87,9 @@ export const usePreferences = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("Aucun utilisateur trouvé, utilisation des préférences par défaut");
-        return defaultPreferences;
+        const localPrefs = loadLocalPreferences();
+        console.log("Aucun utilisateur connecté, utilisation des préférences locales:", localPrefs);
+        return localPrefs;
       }
 
       const { data, error } = await supabase
@@ -100,35 +100,31 @@ export const usePreferences = () => {
 
       if (error) {
         console.error('Erreur lors du chargement des préférences:', error);
-        throw error;
+        return loadLocalPreferences();
       }
 
       if (data) {
         console.log("Préférences chargées depuis Supabase:", data);
+        saveLocalPreferences(data);
         return data;
       }
 
-      console.log("Création des préférences par défaut pour l'utilisateur");
-      const { data: newPrefs, error: insertError } = await supabase
-        .from('user_preferences')
-        .insert([{ 
-          user_id: user.id,
-          ...defaultPreferences
-        }])
-        .select()
-        .maybeSingle();
-
-      if (insertError) {
-        console.error('Erreur lors de la création des préférences par défaut:', insertError);
-        throw insertError;
-      }
-
-      console.log("Préférences par défaut créées:", newPrefs);
-      return newPrefs || defaultPreferences;
-    },
-    initialData: () => {
       const localPrefs = loadLocalPreferences();
-      return localPrefs || defaultPreferences;
+      if (user) {
+        // Créer les préférences dans Supabase si l'utilisateur est connecté
+        const { error: insertError } = await supabase
+          .from('user_preferences')
+          .insert([{ 
+            user_id: user.id,
+            ...localPrefs
+          }]);
+
+        if (insertError) {
+          console.error('Erreur lors de la création des préférences:', insertError);
+        }
+      }
+      
+      return localPrefs;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -138,8 +134,11 @@ export const usePreferences = () => {
       console.log("Mise à jour des préférences:", newPrefs);
       const { data: { user } } = await supabase.auth.getUser();
       
+      const updatedPrefs = { ...preferences, ...newPrefs };
+      saveLocalPreferences(updatedPrefs);
+
       if (!user) {
-        throw new Error("Utilisateur non authentifié");
+        return updatedPrefs;
       }
 
       const { data, error } = await supabase
@@ -157,20 +156,15 @@ export const usePreferences = () => {
         throw error;
       }
 
-      console.log("Préférences mises à jour dans Supabase:", data);
-      return data;
+      return data || updatedPrefs;
     },
     onSuccess: (data) => {
-      if (data) {
-        console.log("Mise à jour réussie, application des nouvelles préférences");
-        queryClient.setQueryData(['preferences'], data);
-        saveLocalPreferences(data);
-        applyPreferences(data);
-        toast({
-          title: "Succès",
-          description: "Vos préférences ont été mises à jour",
-        });
-      }
+      queryClient.setQueryData(['preferences'], data);
+      applyPreferences(data);
+      toast({
+        title: "Succès",
+        description: "Vos préférences ont été mises à jour",
+      });
     },
     onError: (error) => {
       console.error('Erreur lors de la sauvegarde des préférences:', error);
@@ -191,18 +185,14 @@ export const usePreferences = () => {
     }
     
     const localPrefs = loadLocalPreferences();
-    if (localPrefs) {
-      console.log("Application des préférences locales au démarrage");
-      applyPreferences(localPrefs);
-    }
+    applyPreferences(localPrefs);
   }, []);
 
-  // Appliquer les préférences quand elles sont chargées depuis Supabase
+  // Appliquer les préférences quand elles sont chargées
   useEffect(() => {
     if (preferences) {
       console.log("Nouvelles préférences reçues, application...");
       applyPreferences(preferences);
-      saveLocalPreferences(preferences);
     }
   }, [preferences]);
 
