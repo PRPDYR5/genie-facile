@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/Layout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -7,131 +8,187 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 
-const courses = {
+interface PDFInfo {
+  url: string;
+  title: string;
+}
+
+interface CourseInfo {
+  name: string;
+  pdfs: PDFInfo[] | null;
+}
+
+const courses: Record<string, Record<string, CourseInfo>> = {
   seconde: {
     math: {
       name: "Mathématiques",
-      url: null
+      pdfs: null
     },
     physics: {
       name: "Sciences Physiques",
-      url: null
+      pdfs: null
     },
     info: {
       name: "Informatique",
-      url: null
+      pdfs: null
     },
     technologie: {
       name: "Technologie",
-      url: null
+      pdfs: null
     },
     electrotechnique: {
       name: "Électrotechnique",
-      url: null
+      pdfs: null
     },
     mesure_essai: {
       name: "Mesure Essai",
-      url: null
+      pdfs: null
     },
     tpa: {
       name: "Travaux Pratiques Atelier",
-      url: null
+      pdfs: null
     },
     cm: {
       name: "Construction Mécanique",
-      url: "https://drive.google.com/file/d/10rNCZO7UZm-lCeChCn9sHPOx-6Nlse_c/view?usp=sharing"
+      pdfs: [
+        { 
+          url: "https://drive.google.com/file/d/10rNCZO7UZm-lCeChCn9sHPOx-6Nlse_c/view?usp=sharing",
+          title: "Partie 1"
+        },
+        {
+          url: "https://drive.google.com/file/d/10BsDdE-AmA6Pa1cHJ6AxZGaSUSn1ll6-/view?usp=sharing",
+          title: "Partie 2"
+        },
+        {
+          url: "https://drive.google.com/file/d/1E0WxTthKDPK-2NqlCA8o2W0St3KSIdo8/view?usp=sharing",
+          title: "Partie 3"
+        }
+      ]
     },
     automatisme: {
       name: "Automatisme",
-      url: null
+      pdfs: null
     },
     metallurgie: {
       name: "Métallurgie",
-      url: null
+      pdfs: null
     }
   },
   premiere: {
     math: {
       name: "Mathématiques",
-      url: null
+      pdfs: null
     },
     physics: {
       name: "Sciences Physiques",
-      url: null
+      pdfs: null
     },
     info: {
       name: "Informatique",
-      url: null
+      pdfs: null
     },
     technologie: {
       name: "Technologie",
-      url: null
+      pdfs: null
     },
     electrotechnique: {
       name: "Électrotechnique",
-      url: null
+      pdfs: null
     },
     mesure_essai: {
       name: "Mesure Essai",
-      url: null
+      pdfs: null
     },
     tpa: {
       name: "Travaux Pratiques Atelier",
-      url: null
+      pdfs: null
     },
     cm: {
       name: "Construction Mécanique",
-      url: null
+      pdfs: null
     },
     automatisme: {
       name: "Automatisme",
-      url: null
+      pdfs: null
     },
     metallurgie: {
       name: "Métallurgie",
-      url: null
+      pdfs: null
     }
   },
   terminale: {
     math: {
       name: "Mathématiques",
-      url: null
+      pdfs: null
     },
     physics: {
       name: "Sciences Physiques",
-      url: "https://drive.google.com/file/d/1IjNN6ucmovo1hCUdNvQ2dE004B8oYbaS/view?usp=sharing"
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1IjNN6ucmovo1hCUdNvQ2dE004B8oYbaS/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     info: {
       name: "Informatique",
-      url: null
+      pdfs: null
     },
     technologie: {
       name: "Technologie",
-      url: "https://drive.google.com/file/d/1FDrYadg0eqKK09vpF0T0Jc7hjwrysYll/view?usp=sharing"
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1FDrYadg0eqKK09vpF0T0Jc7hjwrysYll/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     electrotechnique: {
       name: "Électrotechnique",
-      url: "https://drive.google.com/file/d/1bgTwZmhl_WodNnRDr6YmjDQCCrITs0oS/view?usp=sharing"
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1bgTwZmhl_WodNnRDr6YmjDQCCrITs0oS/view?usp=sharing",
+          title: "Partie 1"
+        },
+        {
+          url: "https://drive.google.com/file/d/1LfKLO9j5XX20EsbETdt9e76OIa0wiUGM/view?usp=sharing",
+          title: "Partie 2"
+        },
+        {
+          url: "https://drive.google.com/file/d/1egoxMDNnT1RE_h5ShUQ-40NLyto9eN6Y/view?usp=sharing",
+          title: "Partie 3"
+        }
+      ]
     },
     mesure_essai: {
       name: "Mesure Essai",
-      url: null
+      pdfs: null
     },
     tpa: {
       name: "Travaux Pratiques Atelier",
-      url: null
+      pdfs: null
     },
     cm: {
       name: "Construction Mécanique",
-      url: null
+      pdfs: null
     },
     automatisme: {
       name: "Automatisme",
-      url: "https://drive.google.com/file/d/1nO4OdXRSoyURxV11Je22wsTopMQxiV87/view?usp=sharing"
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1nO4OdXRSoyURxV11Je22wsTopMQxiV87/view?usp=sharing",
+          title: "Partie 1"
+        }
+      ]
     },
     metallurgie: {
       name: "Métallurgie",
-      url: "https://drive.google.com/file/d/1_gW0Cwu5GJoAa75LrcEKWxnA1V0qNCCu/view?usp=sharing"
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1_gW0Cwu5GJoAa75LrcEKWxnA1V0qNCCu/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     }
   }
 };
@@ -140,37 +197,41 @@ export default function Courses() {
   const [searchParams] = useSearchParams();
   const initialLevel = searchParams.get("level") || "terminale";
   const initialSubject = searchParams.get("subject") || "";
-  const pdfUrl = searchParams.get("pdf");
+  const initialPdfIndex = parseInt(searchParams.get("pdfIndex") || "0");
+  const initialPdfUrl = searchParams.get("pdf");
 
   const [selectedLevel, setSelectedLevel] = useState(initialLevel);
   const [selectedSubject, setSelectedSubject] = useState(initialSubject);
-  const [selectedPDF, setSelectedPDF] = useState(pdfUrl || "");
+  const [selectedPdfIndex, setSelectedPdfIndex] = useState(initialPdfIndex);
+  const [selectedPDF, setSelectedPDF] = useState(initialPdfUrl || "");
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (pdfUrl) {
-      setSelectedPDF(decodeURIComponent(pdfUrl));
+    if (initialPdfUrl) {
+      setSelectedPDF(decodeURIComponent(initialPdfUrl));
       
       if (!initialSubject && selectedLevel) {
-        const level = courses[selectedLevel as keyof typeof courses];
+        const level = courses[selectedLevel];
         if (level) {
           Object.entries(level).forEach(([subject, data]) => {
-            if (data.url === decodeURIComponent(pdfUrl)) {
+            const pdfFound = data.pdfs?.find(pdf => pdf.url === decodeURIComponent(initialPdfUrl));
+            if (pdfFound) {
               setSelectedSubject(subject);
+              setSelectedPdfIndex(data.pdfs?.indexOf(pdfFound) || 0);
             }
           });
         }
       }
     }
-  }, [pdfUrl, initialSubject, selectedLevel]);
+  }, [initialPdfUrl, initialSubject, selectedLevel]);
 
-  const handleCourseSelection = (level: string, subject: string) => {
+  const handleCourseSelection = (level: string, subject: string, pdfIndex: number = 0) => {
     try {
-      console.log(`Chargement du cours de ${subject} pour le niveau ${level}...`);
-      const course = courses[level as keyof typeof courses][subject as "math" | "physics" | "info"];
+      console.log(`Chargement du cours de ${subject} pour le niveau ${level}, partie ${pdfIndex + 1}...`);
+      const course = courses[level][subject];
       
-      if (!course.url) {
+      if (!course.pdfs || course.pdfs.length === 0) {
         toast({
           variant: "destructive",
           title: "Cours non disponible",
@@ -179,12 +240,22 @@ export default function Courses() {
         return;
       }
 
+      if (pdfIndex >= (course.pdfs?.length || 0)) {
+        toast({
+          variant: "destructive",
+          title: "Partie non disponible",
+          description: "Cette partie du cours n'existe pas.",
+        });
+        return;
+      }
+
       setSelectedSubject(subject);
-      setSelectedPDF(course.url);
+      setSelectedPdfIndex(pdfIndex);
+      setSelectedPDF(course.pdfs[pdfIndex].url);
       
       toast({
         title: "Cours chargé",
-        description: `Le cours de ${course.name} est prêt à être consulté`,
+        description: `${course.name} - ${course.pdfs[pdfIndex].title}`,
       });
     } catch (error) {
       console.error("Erreur lors du chargement du cours:", error);
@@ -212,18 +283,34 @@ export default function Courses() {
 
           <TabsContent value={selectedLevel} className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(courses[selectedLevel as keyof typeof courses]).map(([key, course]) => (
+              {Object.entries(courses[selectedLevel]).map(([key, course]) => (
                 <Card
                   key={key}
                   className={`glass transition-all duration-300 hover:shadow-lg cursor-pointer hover:scale-105 ${
                     selectedSubject === key ? 'border-2 border-[#9b87f5]' : ''
-                  } ${!course.url ? 'opacity-50' : ''} ${isMobile ? 'p-2' : 'p-4'}`}
-                  onClick={() => handleCourseSelection(selectedLevel, key)}
+                  } ${!course.pdfs ? 'opacity-50' : ''} ${isMobile ? 'p-2' : 'p-4'}`}
                 >
                   <CardHeader className={isMobile ? 'p-2' : 'p-4'}>
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex flex-col items-center gap-3">
                       <span className="font-medium text-center">{course.name}</span>
-                      {!course.url && <span className="text-sm text-gray-500">(Bientôt disponible)</span>}
+                      {!course.pdfs && <span className="text-sm text-gray-500">(Bientôt disponible)</span>}
+                      {course.pdfs && (
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {course.pdfs.map((pdf, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleCourseSelection(selectedLevel, key, index)}
+                              className={`px-3 py-1 rounded-full text-sm ${
+                                selectedSubject === key && selectedPdfIndex === index
+                                  ? 'bg-[#9b87f5] text-white'
+                                  : 'bg-gray-100 hover:bg-gray-200'
+                              }`}
+                            >
+                              {pdf.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </CardHeader>
                 </Card>
@@ -233,7 +320,12 @@ export default function Courses() {
             {selectedPDF && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4 text-[#9b87f5]">
-                  Document pour {courses[selectedLevel as keyof typeof courses][selectedSubject as "math" | "physics" | "info"].name}
+                  {courses[selectedLevel][selectedSubject].name}
+                  {courses[selectedLevel][selectedSubject].pdfs && (
+                    <span className="ml-2 text-gray-500">
+                      - {courses[selectedLevel][selectedSubject].pdfs![selectedPdfIndex].title}
+                    </span>
+                  )}
                 </h2>
                 <PDFViewer url={selectedPDF} />
               </div>
