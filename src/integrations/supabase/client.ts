@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -9,11 +10,49 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    storage: {
+      getItem: (key) => {
+        try {
+          const item = localStorage.getItem(key);
+          if (!item) return null;
+          return JSON.parse(item);
+        } catch (error) {
+          console.error('Error reading from localStorage:', error);
+          return null;
+        }
+      },
+      setItem: (key, value) => {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+          console.error('Error writing to localStorage:', error);
+        }
+      },
+      removeItem: (key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.error('Error removing from localStorage:', error);
+        }
+      }
+    }
   },
   global: {
     headers: {
       'X-Client-Info': 'supabase-js-web'
     }
+  },
+  debug: process.env.NODE_ENV === 'development'
+});
+
+// Configurer un écouteur pour les changements d'état de session
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event);
+  if (event === 'SIGNED_OUT') {
+    // Nettoyer le stockage local
+    localStorage.clear();
+  } else if (event === 'TOKEN_REFRESHED') {
+    console.log('Token refreshed successfully');
   }
 });
