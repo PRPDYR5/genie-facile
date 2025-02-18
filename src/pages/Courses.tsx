@@ -39,7 +39,7 @@ const courses = {
     },
     cm: {
       name: "Construction Mécanique",
-      url: null
+      url: "https://drive.google.com/file/d/10rNCZO7UZm-lCeChCn9sHPOx-6Nlse_c/view?usp=sharing"
     },
     automatisme: {
       name: "Automatisme",
@@ -53,15 +53,15 @@ const courses = {
   premiere: {
     math: {
       name: "Mathématiques",
-      url: "https://drive.google.com/file/d/1e7pV0w9cUvz4sEzrVQuvQjpljLOEjvQE/view?usp=sharing"
+      url: null
     },
     physics: {
       name: "Sciences Physiques",
-      url: "https://drive.google.com/file/d/1eAYwN6aok-KtenwNjrPh1Ys2NErswDC9/view?usp=sharing"
+      url: null
     },
     info: {
       name: "Informatique",
-      url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing"
+      url: null
     },
     technologie: {
       name: "Technologie",
@@ -95,23 +95,23 @@ const courses = {
   terminale: {
     math: {
       name: "Mathématiques",
-      url: "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing"
+      url: null
     },
     physics: {
       name: "Sciences Physiques",
-      url: "https://drive.google.com/file/d/1wki9fTD9_ur9rhtuxgKUI3Xlwg78Wzeo/view?usp=sharing"
+      url: "https://drive.google.com/file/d/1IjNN6ucmovo1hCUdNvQ2dE004B8oYbaS/view?usp=sharing"
     },
     info: {
       name: "Informatique",
-      url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing"
+      url: null
     },
     technologie: {
       name: "Technologie",
-      url: null
+      url: "https://drive.google.com/file/d/1FDrYadg0eqKK09vpF0T0Jc7hjwrysYll/view?usp=sharing"
     },
     electrotechnique: {
       name: "Électrotechnique",
-      url: null
+      url: "https://drive.google.com/file/d/1bgTwZmhl_WodNnRDr6YmjDQCCrITs0oS/view?usp=sharing"
     },
     mesure_essai: {
       name: "Mesure Essai",
@@ -127,11 +127,11 @@ const courses = {
     },
     automatisme: {
       name: "Automatisme",
-      url: null
+      url: "https://drive.google.com/file/d/1nO4OdXRSoyURxV11Je22wsTopMQxiV87/view?usp=sharing"
     },
     metallurgie: {
       name: "Métallurgie",
-      url: null
+      url: "https://drive.google.com/file/d/1_gW0Cwu5GJoAa75LrcEKWxnA1V0qNCCu/view?usp=sharing"
     }
   }
 };
@@ -148,12 +148,10 @@ export default function Courses() {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
-  // Effect to handle URL parameters
   useEffect(() => {
     if (pdfUrl) {
       setSelectedPDF(decodeURIComponent(pdfUrl));
       
-      // Find the corresponding subject if not provided
       if (!initialSubject && selectedLevel) {
         const level = courses[selectedLevel as keyof typeof courses];
         if (level) {

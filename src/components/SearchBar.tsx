@@ -14,18 +14,60 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const coursesData = {
+  seconde: {
+    math: {
+      name: "Mathématiques Seconde",
+      url: null
+    },
+    physics: {
+      name: "Sciences Physiques Seconde",
+      url: null
+    },
+    info: {
+      name: "Informatique Seconde",
+      url: null
+    },
+    technologie: {
+      name: "Technologie Seconde",
+      url: null
+    },
+    electrotechnique: {
+      name: "Électrotechnique Seconde",
+      url: null
+    },
+    mesure_essai: {
+      name: "Mesure Essai Seconde",
+      url: null
+    },
+    tpa: {
+      name: "Travaux Pratiques Atelier Seconde",
+      url: null
+    },
+    cm: {
+      name: "Construction Mécanique Seconde",
+      url: "https://drive.google.com/file/d/10rNCZO7UZm-lCeChCn9sHPOx-6Nlse_c/view?usp=sharing"
+    },
+    automatisme: {
+      name: "Automatisme Seconde",
+      url: null
+    },
+    metallurgie: {
+      name: "Métallurgie Seconde",
+      url: null
+    }
+  },
   premiere: {
     math: {
       name: "Mathématiques Première",
-      url: "https://drive.google.com/file/d/1e7pV0w9cUvz4sEzrVQuvQjpljLOEjvQE/view?usp=sharing"
+      url: null
     },
     physics: {
       name: "Sciences Physiques Première",
-      url: "https://drive.google.com/file/d/1eAYwN6aok-KtenwNjrPh1Ys2NErswDC9/view?usp=sharing"
+      url: null
     },
     info: {
       name: "Informatique Première",
-      url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing"
+      url: null
     },
     technologie: {
       name: "Technologie Première",
@@ -59,23 +101,23 @@ const coursesData = {
   terminale: {
     math: {
       name: "Mathématiques Terminale",
-      url: "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing"
+      url: null
     },
     physics: {
       name: "Sciences Physiques Terminale",
-      url: "https://drive.google.com/file/d/1wki9fTD9_ur9rhtuxgKUI3Xlwg78Wzeo/view?usp=sharing"
+      url: "https://drive.google.com/file/d/1IjNN6ucmovo1hCUdNvQ2dE004B8oYbaS/view?usp=sharing"
     },
     info: {
       name: "Informatique Terminale",
-      url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing"
+      url: null
     },
     technologie: {
       name: "Technologie Terminale",
-      url: null
+      url: "https://drive.google.com/file/d/1FDrYadg0eqKK09vpF0T0Jc7hjwrysYll/view?usp=sharing"
     },
     electrotechnique: {
       name: "Électrotechnique Terminale",
-      url: null
+      url: "https://drive.google.com/file/d/1bgTwZmhl_WodNnRDr6YmjDQCCrITs0oS/view?usp=sharing"
     },
     mesure_essai: {
       name: "Mesure Essai Terminale",
@@ -91,11 +133,11 @@ const coursesData = {
     },
     automatisme: {
       name: "Automatisme Terminale",
-      url: null
+      url: "https://drive.google.com/file/d/1nO4OdXRSoyURxV11Je22wsTopMQxiV87/view?usp=sharing"
     },
     metallurgie: {
       name: "Métallurgie Terminale",
-      url: null
+      url: "https://drive.google.com/file/d/1_gW0Cwu5GJoAa75LrcEKWxnA1V0qNCCu/view?usp=sharing"
     }
   }
 };
@@ -114,7 +156,6 @@ export function SearchBar() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
-  // Fonction pour transformer les données des cours en format plat pour la recherche
   const getAllCourses = () => {
     const courses: SearchResult[] = [];
     Object.entries(coursesData).forEach(([level, subjects]) => {
@@ -153,7 +194,6 @@ export function SearchBar() {
     console.log("Cours sélectionné:", course);
     setOpen(false);
     
-    // Redirection vers la page des cours avec les bons paramètres et l'URL du PDF
     navigate(`/courses?level=${course.level}&subject=${course.subject}&pdf=${encodeURIComponent(course.url)}`);
     
     toast({
@@ -162,7 +202,6 @@ export function SearchBar() {
     });
   };
 
-  // Initialiser les résultats au chargement
   useEffect(() => {
     setSearchResults(getAllCourses());
   }, []);
