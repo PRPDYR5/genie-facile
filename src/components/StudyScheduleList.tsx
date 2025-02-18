@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,16 +14,24 @@ type StudySession = Database['public']['Tables']['study_schedules']['Row'];
 export const StudyScheduleList = () => {
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
   const fetchSessions = async () => {
     try {
+      setError(null);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         console.log("Aucun utilisateur connecté");
         setIsLoading(false);
         return;
+      }
+
+      // Vérifier d'abord que nous avons bien une session active
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error("Session expirée");
       }
 
       console.log("Récupération des sessions pour l'utilisateur:", user.id);
@@ -33,18 +42,19 @@ export const StudyScheduleList = () => {
         .order('start_time', { ascending: true });
 
       if (error) {
-        console.error('Erreur lors de la récupération des sessions:', error);
+        console.error('Erreur Supabase:', error);
         throw error;
       }
 
       console.log("Sessions récupérées:", data);
       setSessions(data || []);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la récupération des sessions:', error);
+      setError(error.message || "Une erreur est survenue");
       toast({
         title: "Erreur",
-        description: "Impossible de charger les sessions d'étude",
+        description: error.message || "Impossible de charger les sessions d'étude",
         variant: "destructive",
       });
     } finally {
@@ -67,11 +77,11 @@ export const StudyScheduleList = () => {
       });
 
       fetchSessions();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de la suppression de la session:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer la session",
+        description: error.message || "Impossible de supprimer la session",
         variant: "destructive",
       });
     }
@@ -79,32 +89,7 @@ export const StudyScheduleList = () => {
 
   useEffect(() => {
     fetchSessions();
-    
-    // Mise en place des notifications
-    if ('Notification' in window) {
-      Notification.requestPermission();
-    }
-
-    // Vérification des sessions toutes les minutes
-    const interval = setInterval(() => {
-      const now = new Date();
-      sessions.forEach(session => {
-        const startTime = new Date(session.start_time);
-        const timeDiff = startTime.getTime() - now.getTime();
-        
-        // Notification 15 minutes avant
-        if (timeDiff > 0 && timeDiff <= 15 * 60 * 1000) {
-          if (Notification.permission === "granted") {
-            new Notification("Rappel de session d'étude", {
-              body: `Votre session "${session.title}" commence dans ${Math.round(timeDiff / 60000)} minutes`,
-            });
-          }
-        }
-      });
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [sessions]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -113,6 +98,24 @@ export const StudyScheduleList = () => {
           <p className="text-center text-muted-foreground">
             Chargement des sessions...
           </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="mt-6 glass">
+        <CardContent className="pt-6">
+          <p className="text-center text-red-500">
+            {error}
+          </p>
+          <Button 
+            onClick={fetchSessions}
+            className="mt-4 mx-auto block"
+          >
+            Réessayer
+          </Button>
         </CardContent>
       </Card>
     );

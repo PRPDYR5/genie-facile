@@ -40,19 +40,37 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   },
   global: {
     headers: {
-      'X-Client-Info': 'supabase-js-web'
+      'X-Client-Info': 'supabase-js-web',
     }
   }
 });
 
+// Vérifier l'état de la session au démarrage
+supabase.auth.getSession().then(({ data: { session }}) => {
+  if (session) {
+    console.log('Session active détectée:', session.user.id);
+  } else {
+    console.log('Aucune session active');
+  }
+});
+
 // Configurer un écouteur pour les changements d'état de session
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange(async (event, session) => {
   console.log('Auth state changed:', event);
+  
   if (event === 'SIGNED_OUT') {
-    // Nettoyer le stockage local
+    console.log('Déconnexion - nettoyage du stockage local');
     localStorage.clear();
-  } else if (event === 'TOKEN_REFRESHED') {
-    console.log('Token refreshed successfully');
+  } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+    if (session) {
+      console.log('Nouvelle session ou token rafraîchi pour:', session.user.id);
+      // Mettre à jour le token dans le stockage
+      try {
+        localStorage.setItem('supabase-auth-token', session.access_token);
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour du token:', error);
+      }
+    }
   }
 });
 
