@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -7,6 +8,8 @@ import QA from "@/pages/QA";
 import Search from "@/pages/Search";
 import Settings from "@/pages/Settings";
 import Summaries from "@/pages/Summaries";
+import Bac from "@/pages/Bac";
+import BacExercises from "@/pages/BacExercises";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
@@ -46,6 +49,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Summaries />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bac"
+          element={
+            <ProtectedRoute>
+              <Bac />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bac/:bacType"
+          element={
+            <ProtectedRoute>
+              <BacExercises />
             </ProtectedRoute>
           }
         />
