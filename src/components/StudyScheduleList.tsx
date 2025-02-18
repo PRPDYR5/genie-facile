@@ -6,15 +6,9 @@ import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-interface StudySession {
-  id: string;
-  title: string;
-  start_time: string;
-  end_time: string;
-  subject: string;
-  level: string;
-}
+type StudySession = Database['public']['Tables']['study_schedules']['Row'];
 
 export const StudyScheduleList = () => {
   const [sessions, setSessions] = useState<StudySession[]>([]);

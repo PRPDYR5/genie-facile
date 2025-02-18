@@ -42,8 +42,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     headers: {
       'X-Client-Info': 'supabase-js-web'
     }
-  },
-  debug: process.env.NODE_ENV === 'development'
+  }
 });
 
 // Configurer un écouteur pour les changements d'état de session
@@ -56,3 +55,4 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('Token refreshed successfully');
   }
 });
+

@@ -1,15 +1,20 @@
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import type { Database } from "@/integrations/supabase/types"
 
 interface QuestionFormProps {
   selectedLevel: string
   selectedSubject: string
   onQuestionSubmitted: () => void
 }
+
+type Level = Database['public']['Enums']['education_level']
+type Subject = Database['public']['Enums']['subject_type']
 
 export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitted }: QuestionFormProps) {
   const [userQuestion, setUserQuestion] = useState("")
@@ -55,13 +60,13 @@ export function QuestionForm({ selectedLevel, selectedSubject, onQuestionSubmitt
       // Insert into qa_history table
       const { error: insertError } = await supabase
         .from('qa_history')
-        .insert([{
+        .insert({
           question: userQuestion,
           answer,
-          level: selectedLevel as "seconde" | "premiere" | "terminale",
-          subject: selectedSubject as "math" | "physics" | "info",
+          level: selectedLevel as Level,
+          subject: selectedSubject as Subject,
           pdf_source: "deepseek-ai"
-        }])
+        })
 
       if (insertError) throw insertError
 
