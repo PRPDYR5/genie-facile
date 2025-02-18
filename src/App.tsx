@@ -10,6 +10,7 @@ import Settings from "@/pages/Settings";
 import Summaries from "@/pages/Summaries";
 import Bac from "@/pages/Bac";
 import BacExercises from "@/pages/BacExercises";
+import Documents from "@/pages/Documents";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
@@ -65,6 +66,14 @@ function App() {
           element={
             <ProtectedRoute>
               <BacExercises />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+            <ProtectedRoute>
+              <Documents />
             </ProtectedRoute>
           }
         />

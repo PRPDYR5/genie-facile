@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,46 +7,43 @@ import { useState } from "react";
 import { Book, Search, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const Documents = () => {
+interface Document {
+  title: string;
+  level: string;
+  subject: string;
+  downloadUrl: string | null;
+  isNew?: boolean;
+}
+
+const subjects = [
+  { value: "info", label: "Informatique" },
+  { value: "physics", label: "Sciences Physiques" },
+  { value: "electrotechnique", label: "Électrotechnique" },
+  { value: "mesure_essai", label: "Mesure Essai" },
+  { value: "cm", label: "Construction Mécanique" },
+  { value: "automatisme", label: "Automatisme" },
+  { value: "tpa", label: "Travaux Pratiques Atelier" }
+];
+
+const levels = [
+  { value: "seconde", label: "Seconde" },
+  { value: "premiere", label: "Première" },
+  { value: "terminale", label: "Terminale" }
+];
+
+const documents: Document[] = subjects.flatMap(subject =>
+  levels.map(level => ({
+    title: `Document ${subject.label} ${level.label} F3`,
+    level: level.label,
+    subject: subject.label,
+    downloadUrl: null // "Bientôt disponible"
+  }))
+);
+
+export default function Documents() {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
-  const levels = [
-    { value: "seconde", label: "Seconde" },
-    { value: "premiere", label: "Première" },
-    { value: "terminale", label: "Terminale" }
-  ];
-
-  const subjects = [
-    { value: "math", label: "Mathématiques" },
-    { value: "physics", label: "Sciences Physiques" },
-    { value: "info", label: "Informatique" },
-    { value: "technologie", label: "Technologie" },
-    { value: "electrotechnique", label: "Électrotechnique" },
-    { value: "mesure_essai", label: "Mesure Essai" },
-    { value: "tpa", label: "Travaux Pratiques Atelier" },
-    { value: "cm", label: "Construction Mécanique" },
-    { value: "automatisme", label: "Automatisme" },
-    { value: "metallurgie", label: "Métallurgie" }
-  ];
-
-  const documents = [
-    {
-      title: "Annales 2023 - Mathématiques",
-      level: "Terminale",
-      subject: "Mathématiques",
-      downloadUrl: "#",
-      isNew: true
-    },
-    {
-      title: "Cours complet - Électrotechnique",
-      level: "Première",
-      subject: "Électrotechnique",
-      downloadUrl: "#",
-      isNew: true
-    }
-  ];
 
   const filteredDocuments = documents.filter(doc => {
     const matchesLevel = !selectedLevel || doc.level.toLowerCase() === selectedLevel;
@@ -124,11 +122,16 @@ const Documents = () => {
                     <span>{doc.subject}</span>
                   </div>
                   <button
-                    className="text-sm text-[#9b87f5] hover:text-[#8b77e5] flex items-center gap-1"
-                    onClick={() => window.open(doc.downloadUrl, '_blank')}
+                    className={`text-sm flex items-center gap-1 ${
+                      doc.downloadUrl
+                        ? "text-[#9b87f5] hover:text-[#8b77e5] cursor-pointer"
+                        : "text-gray-400 cursor-not-allowed"
+                    }`}
+                    onClick={() => doc.downloadUrl && window.open(doc.downloadUrl, '_blank')}
+                    disabled={!doc.downloadUrl}
                   >
                     <Download className="h-4 w-4" />
-                    Télécharger
+                    {doc.downloadUrl ? "Télécharger" : "Bientôt disponible"}
                   </button>
                 </div>
               </div>
@@ -138,6 +141,4 @@ const Documents = () => {
       </div>
     </Layout>
   );
-};
-
-export default Documents;
+}
