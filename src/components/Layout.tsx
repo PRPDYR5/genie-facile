@@ -1,12 +1,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { StudyNotifications } from "./StudyNotifications";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogIn, UserPlus, MessageSquare } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Footer } from "./Footer";
+import { supabase } from "@/integrations/supabase/client";
 import { LanguageSelector } from "./LanguageSelector";
+import { Footer } from "./Footer";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -26,7 +26,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <StudyNotifications />
       <div className="min-h-screen flex flex-col w-full bg-background">
         <div className="flex flex-1">
           <AppSidebar />
