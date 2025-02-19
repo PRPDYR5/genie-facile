@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 
 export function BotpressChat() {
@@ -5,35 +6,38 @@ export function BotpressChat() {
     console.log("Initialisation du chat Botpress...");
     
     // Ajout du script Botpress
-    const script1 = document.createElement('script');
-    script1.src = 'https://cdn.botpress.cloud/webchat/v2.2/inject.js';
-    script1.async = true;
-    document.head.appendChild(script1);
+    const script = document.createElement('script');
+    script.src = "https://cdn.botpress.cloud/webchat/v1/inject.js";
+    script.async = true;
+    document.head.appendChild(script);
 
-    // Ajout du script de configuration
-    const script2 = document.createElement('script');
-    script2.src = 'https://files.bpcontent.cloud/2025/01/30/21/20250130210003-RPD14KBI.js';
-    script2.async = true;
-    document.head.appendChild(script2);
+    // Configuration du chatbot
+    script.onload = () => {
+      // @ts-ignore
+      window.botpressWebChat.init({
+        "botId": "5883d95d-ddb0-443c-a0e2-f366c0cac2c6",
+        "hostUrl": "https://cdn.botpress.cloud/webchat/v1",
+        "messagingUrl": "https://messaging.botpress.cloud",
+        "clientId": "5883d95d-ddb0-443c-a0e2-f366c0cac2c6",
+        "containerWidth": "100%",
+        "layoutWidth": "100%",
+        "hideWidget": true,
+        "showPoweredBy": false
+      });
+    };
 
-    // Nettoyage au démontage
     return () => {
-      console.log("Nettoyage des scripts Botpress...");
-      if (document.head.contains(script1)) {
-        document.head.removeChild(script1);
-      }
-      if (document.head.contains(script2)) {
-        document.head.removeChild(script2);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
       }
     };
   }, []);
 
   return (
-    <div className="h-[600px] w-full glass dark:bg-gray-900/50">
+    <div className="h-[80vh] w-full">
       <div 
-        id="bp-web-widget-container" 
+        id="webchat"
         className="h-full w-full rounded-xl overflow-hidden"
-        style={{ minHeight: '500px' }}
       />
     </div>
   );
