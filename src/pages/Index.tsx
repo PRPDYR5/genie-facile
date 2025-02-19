@@ -1,8 +1,8 @@
-
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
+import { BotpressChat } from "@/components/BotpressChat";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import { Bot } from "lucide-react";
@@ -41,18 +41,8 @@ const Index = () => {
   return (
     <Layout>
       <div className="space-y-4 sm:space-y-16 animate-fade-in mx-auto w-full max-w-7xl px-4">
-        {/* GENIE BOT Button */}
-        <div className="absolute top-4 right-4 z-50">
-          <Link to="/courses/qa">
-            <Button 
-              variant="ghost" 
-              className="bg-[#9b87f5]/10 hover:bg-[#9b87f5]/20 text-[#9b87f5]"
-            >
-              <Bot className="mr-2 h-5 w-5" />
-              GENIE BOT
-            </Button>
-          </Link>
-        </div>
+        {/* Ajouter BotpressChat */}
+        <BotpressChat />
 
         {/* Hero Section */}
         <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-4 sm:py-16">

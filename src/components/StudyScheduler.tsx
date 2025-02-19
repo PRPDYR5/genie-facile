@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,8 @@ export const StudyScheduler = () => {
         parseInt(endTime.split(":")[1])
       );
 
-      const { error } = await supabase
+      // Créer la session d'étude
+      const { data, error } = await supabase
         .from('study_schedules')
         .insert({
           user_id: user.id,
@@ -80,9 +82,26 @@ export const StudyScheduler = () => {
           subject,
           level,
           notification_enabled: true
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Programmer une notification pour 5 minutes avant la session
+      const notificationTime = new Date(startDateTime.getTime() - 5 * 60000);
+      const currentTime = new Date();
+      const timeUntilNotification = notificationTime.getTime() - currentTime.getTime();
+
+      if (timeUntilNotification > 0) {
+        setTimeout(() => {
+          toast({
+            title: "Rappel de session d'étude",
+            description: `Votre session "${title}" commence dans 5 minutes !`,
+            duration: 10000,
+          });
+        }, timeUntilNotification);
+      }
 
       toast({
         title: "Succès",
