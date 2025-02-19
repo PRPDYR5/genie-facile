@@ -66,6 +66,7 @@ export type Database = {
       study_schedules: {
         Row: {
           created_at: string
+          email_sent: boolean | null
           end_time: string
           id: string
           level: string
@@ -77,6 +78,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email_sent?: boolean | null
           end_time: string
           id?: string
           level: string
@@ -88,6 +90,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email_sent?: boolean | null
           end_time?: string
           id?: string
           level?: string
