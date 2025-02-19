@@ -27,7 +27,7 @@ export function StudyNotifications() {
       for (const session of sessions || []) {
         // Demander la permission pour les notifications du navigateur
         if (Notification.permission === 'granted') {
-          new Notification('Rappel de session d'étude', {
+          new Notification("Rappel de session d'étude", {
             body: `Votre session "${session.title}" commence dans 5 minutes !`,
             icon: '/favicon.ico'
           });
@@ -37,7 +37,7 @@ export function StudyNotifications() {
         toast({
           title: "Session d'étude à venir",
           description: `Votre session "${session.title}" commence dans 5 minutes !`,
-          duration: 10000,
+          duration: 10000
         });
 
         // Marquer la notification comme envoyée
