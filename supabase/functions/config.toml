@@ -1,0 +1,15 @@
+
+libyrenaizrhzbxiigjv
+project_id = "libyrenaizrhzbxiigjv"
+[functions.send-study-reminder]
+verify_jwt = true
+[functions.process-deepseek-question]
+verify_jwt = true
+[functions.process-pdf-question]
+verify_jwt = true
+[functions.process-poe-question]
+verify_jwt = true
+
+[functions.send-study-reminder.schedule]
+# Exécuter toutes les 5 minutes
+schedule = "*/5 * * * *"
