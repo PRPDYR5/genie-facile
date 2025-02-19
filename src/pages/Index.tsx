@@ -2,12 +2,8 @@ import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
-import { BotpressChat } from "@/components/BotpressChat";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-import { Bot } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
 const Index = () => {
   console.log("Rendering Index page");
@@ -41,9 +37,6 @@ const Index = () => {
   return (
     <Layout>
       <div className="space-y-4 sm:space-y-16 animate-fade-in mx-auto w-full max-w-7xl px-4">
-        {/* Ajouter BotpressChat */}
-        <BotpressChat />
-
         {/* Hero Section */}
         <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-4 sm:py-16">
           <motion.h1 

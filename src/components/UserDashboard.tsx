@@ -1,6 +1,5 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Search, Settings, GraduationCap, BookMarked, Book, Bot } from "lucide-react";
+import { FileText, Search, Settings, GraduationCap, BookMarked, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -32,12 +31,6 @@ export function UserDashboard() {
       icon: Book,
       description: "Consultez les annales et documents",
       onClick: () => navigate("/documents")
-    },
-    {
-      title: "GENIE BOT",
-      icon: Bot,
-      description: "Chattez avec notre assistant intelligent",
-      onClick: () => navigate("/courses/qa")
     },
     {
       title: "Recherche avancée",

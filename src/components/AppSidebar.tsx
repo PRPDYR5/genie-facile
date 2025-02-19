@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,7 @@ import {
   GraduationCap,
   BookMarked,
   FileText,
-  Book,
-  Bot
+  Book
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,12 +77,6 @@ export function AppSidebar() {
               <Button variant="ghost" className="w-full justify-start">
                 <Book className="mr-2 h-4 w-4" />
                 Annales et Documents
-              </Button>
-            </Link>
-            <Link to="/courses/qa">
-              <Button variant="ghost" className="w-full justify-start">
-                <Bot className="mr-2 h-4 w-4" />
-                GENIE BOT
               </Button>
             </Link>
             <Link to="/search">
