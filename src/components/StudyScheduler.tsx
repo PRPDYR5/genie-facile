@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,8 @@ export const StudyScheduler = () => {
         parseInt(endTime.split(":")[1])
       );
 
-      const { error } = await supabase
+      // Créer la session d'étude
+      const { data: sessionData, error: sessionError } = await supabase
         .from('study_schedules')
         .insert({
           user_id: user.id,
@@ -79,10 +81,39 @@ export const StudyScheduler = () => {
           end_time: endDateTime.toISOString(),
           subject,
           level,
-          notification_enabled: true
-        });
+          notification_enabled: true,
+          email_sent: false
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (sessionError) throw sessionError;
+
+      // Programmer l'envoi de l'email
+      const timeUntilSession = startDateTime.getTime() - Date.now();
+      if (timeUntilSession > 0) {
+        setTimeout(async () => {
+          try {
+            const { error: emailError } = await supabase.functions.invoke('send-study-reminder', {
+              body: { session: sessionData, user }
+            });
+
+            if (emailError) {
+              console.error('Erreur lors de l\'envoi du rappel:', emailError);
+              return;
+            }
+
+            // Mettre à jour le statut de l'email
+            await supabase
+              .from('study_schedules')
+              .update({ email_sent: true })
+              .eq('id', sessionData.id);
+
+          } catch (error) {
+            console.error('Erreur lors de l\'envoi du rappel:', error);
+          }
+        }, timeUntilSession);
+      }
 
       toast({
         title: "Succès",
@@ -95,6 +126,7 @@ export const StudyScheduler = () => {
       setLevel("");
       setStartTime("");
       setEndTime("");
+      setSelectedDate(new Date());
       
     } catch (error) {
       console.error('Error scheduling study session:', error);

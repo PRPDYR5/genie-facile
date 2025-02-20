@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,7 +45,7 @@ export const usePreferences = () => {
     try {
       console.log("Sauvegarde des préférences locales:", prefs);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-      localStorage.setItem('theme', prefs.theme); // Sauvegarde séparée du thème
+      localStorage.setItem('theme', prefs.theme);
       applyPreferences(prefs);
       console.log("Préférences sauvegardées avec succès");
     } catch (error) {
@@ -56,8 +57,13 @@ export const usePreferences = () => {
     console.log("Application des préférences:", prefs);
     
     // Application du thème
-    document.documentElement.classList.remove('dark', 'light');
-    document.documentElement.classList.add(prefs.theme);
+    if (prefs.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
     
     // Taille de police
     const fontSize = {
@@ -111,7 +117,6 @@ export const usePreferences = () => {
 
       const localPrefs = loadLocalPreferences();
       if (user) {
-        // Créer les préférences dans Supabase si l'utilisateur est connecté
         const { error: insertError } = await supabase
           .from('user_preferences')
           .insert([{ 
@@ -126,7 +131,6 @@ export const usePreferences = () => {
       
       return localPrefs;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const { mutate: updatePreferences } = useMutation({
@@ -143,13 +147,10 @@ export const usePreferences = () => {
 
       const { data, error } = await supabase
         .from('user_preferences')
-        .update({
-          ...newPrefs,
-          updated_at: new Date().toISOString()
-        })
+        .update(newPrefs)
         .eq('user_id', user.id)
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error('Erreur lors de la mise à jour des préférences:', error);
@@ -177,18 +178,6 @@ export const usePreferences = () => {
   });
 
   // Appliquer les préférences au chargement initial
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      document.documentElement.classList.remove('dark', 'light');
-      document.documentElement.classList.add(savedTheme);
-    }
-    
-    const localPrefs = loadLocalPreferences();
-    applyPreferences(localPrefs);
-  }, []);
-
-  // Appliquer les préférences quand elles sont chargées
   useEffect(() => {
     if (preferences) {
       console.log("Nouvelles préférences reçues, application...");
