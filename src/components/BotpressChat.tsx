@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
-
 export function BotpressChat() {
   useEffect(() => {
     console.log("Initialisation du chat Botpress...");
-    
+
     // Ajout du script Botpress
     const script1 = document.createElement('script');
     script1.src = 'https://cdn.botpress.cloud/webchat/v2.2/inject.js';
@@ -27,14 +26,7 @@ export function BotpressChat() {
       }
     };
   }, []);
-
-  return (
-    <div className="h-[600px] w-full glass dark:bg-gray-900/50">
-      <div 
-        id="bp-web-widget-container" 
-        className="h-full w-full rounded-xl overflow-hidden"
-        style={{ minHeight: '500px' }}
-      />
-    </div>
-  );
+  return <div className="h-[600px] w-full glass dark:bg-gray-900/50">
+      
+    </div>;
 }
