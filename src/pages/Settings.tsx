@@ -1,46 +1,90 @@
+
 import { Layout } from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
-import { usePreferences } from "@/hooks/use-preferences";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+type UserPreferences = {
+  theme: 'light' | 'dark';
+  fontSize: 'small' | 'medium' | 'large';
+  language: 'fr' | 'en';
+}
+
+const defaultPreferences: UserPreferences = {
+  theme: 'light',
+  fontSize: 'medium',
+  language: 'fr'
+};
+
 export default function Settings() {
-  const { preferences, isLoading, updatePreferences } = usePreferences();
+  const [preferences, setPreferences] = useState<UserPreferences>(defaultPreferences);
   const { toast } = useToast();
 
-  const handlePreferenceUpdate = async (updates: any) => {
+  // Charger les préférences au montage du composant
+  useEffect(() => {
+    const savedPrefs = localStorage.getItem('user_preferences');
+    if (savedPrefs) {
+      setPreferences(JSON.parse(savedPrefs));
+      applyPreferences(JSON.parse(savedPrefs));
+    }
+  }, []);
+
+  // Appliquer les préférences à l'interface
+  const applyPreferences = (prefs: UserPreferences) => {
+    // Appliquer le thème
+    if (prefs.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
+
+    // Appliquer la taille de police
+    const fontSizes = {
+      small: '14px',
+      medium: '16px',
+      large: '18px'
+    };
+    document.documentElement.style.fontSize = fontSizes[prefs.fontSize];
+
+    // Appliquer la langue
+    document.documentElement.lang = prefs.language;
+  };
+
+  // Gestionnaire de changement de préférences
+  const handlePreferenceChange = (key: keyof UserPreferences, value: string) => {
+    const newPrefs = {
+      ...preferences,
+      [key]: value
+    } as UserPreferences;
+    setPreferences(newPrefs);
+  };
+
+  // Sauvegarder les préférences
+  const handleSave = () => {
     try {
-      await updatePreferences(updates);
+      localStorage.setItem('user_preferences', JSON.stringify(preferences));
+      applyPreferences(preferences);
       toast({
-        title: "Paramètres mis à jour",
-        description: "Vos préférences ont été enregistrées avec succès.",
+        title: "Succès",
+        description: "Vos préférences ont été sauvegardées",
       });
     } catch (error) {
-      console.error("Erreur lors de la mise à jour des préférences:", error);
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue lors de la mise à jour des paramètres.",
+        description: "Impossible de sauvegarder les préférences",
       });
     }
   };
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-[#9b87f5]" />
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
-      <div className="space-y-8 animate-fade-in max-w-3xl mx-auto">
+      <div className="space-y-8 max-w-3xl mx-auto p-4">
         <h1 className="text-4xl font-bold gradient-text">Paramètres</h1>
         
         <Card className="glass">
@@ -49,9 +93,9 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              defaultValue={preferences?.theme || 'light'} 
-              onValueChange={(value) => handlePreferenceUpdate({ theme: value })}
-              className="space-y-4"
+              value={preferences.theme}
+              onValueChange={(value) => handlePreferenceChange('theme', value)}
+              className="space-y-2"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="light" id="light" />
@@ -71,9 +115,9 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              defaultValue={preferences?.font_size || 'medium'} 
-              onValueChange={(value) => handlePreferenceUpdate({ font_size: value })}
-              className="space-y-4"
+              value={preferences.fontSize}
+              onValueChange={(value) => handlePreferenceChange('fontSize', value)}
+              className="space-y-2"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="small" id="small" />
@@ -97,9 +141,9 @@ export default function Settings() {
           </CardHeader>
           <CardContent>
             <RadioGroup 
-              defaultValue={preferences?.language || 'fr'} 
-              onValueChange={(value: 'fr' | 'en') => handlePreferenceUpdate({ language: value })}
-              className="space-y-4"
+              value={preferences.language}
+              onValueChange={(value) => handlePreferenceChange('language', value)}
+              className="space-y-2"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="fr" id="fr" />
@@ -113,23 +157,12 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-[#9b87f5]">Mode Focus</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4">
-              <Switch
-                checked={preferences?.focus_mode || false}
-                onCheckedChange={(checked) => handlePreferenceUpdate({ focus_mode: checked })}
-              />
-              <Label>Activer le mode focus</Label>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Le mode focus désactive les notifications pour vous aider à rester concentré.
-            </p>
-          </CardContent>
-        </Card>
+        <Button 
+          onClick={handleSave}
+          className="w-full bg-[#9b87f5] hover:bg-[#8b77e5] text-white"
+        >
+          Sauvegarder les préférences
+        </Button>
       </div>
     </Layout>
   );
