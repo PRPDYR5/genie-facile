@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 export default function Summaries() {
   return (
     <Layout>
-      <div className="space-y-8 max-w-4xl mx-auto p-4">
+      <div className="space-y-8 p-4">
         <h1 className="text-4xl font-bold text-center gradient-text mb-8">
           Bienvenue sur Génie Facile
         </h1>
@@ -15,17 +15,17 @@ export default function Summaries() {
           </p>
         </div>
 
-        <div className="flex justify-center mb-8">
+        <div className="w-full">
           <iframe 
             src="https://gamma.app/embed/bxvteliose13vur" 
-            style={{ width: '700px', maxWidth: '100%', height: '450px' }}
+            style={{ width: '100%', height: '600px' }}
             allow="fullscreen" 
             title="Génie Facile: Simplifier l'éducation technique en Afrique"
             className="rounded-lg shadow-lg"
           />
         </div>
 
-        <div className="grid gap-6 mt-8">
+        <div className="grid gap-6 mt-8 max-w-4xl mx-auto">
           <div className="bg-[#9b87f5]/10 p-6 rounded-lg">
             <h2 className="text-2xl font-semibold text-[#9b87f5] mb-4">
               Nos Fonctionnalités Principales

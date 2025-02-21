@@ -4,11 +4,29 @@ import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+
+const messages = [
+  "📢 Bonne semaine technique du LETP Lomé ! 🚀 Apprendre, c'est progresser. Génie Facile, votre allié vers la réussite !",
+  "📢 L'excellence n'est pas un acte, mais une habitude. 💡 Avec Génie Facile, révisez intelligemment et atteignez vos objectifs !",
+  "📢 Le savoir est une puissance, et Génie Facile vous donne les outils pour l'exploiter. ⚡️ Ne manquez aucune opportunité d'apprendre !",
+  "📢 Un apprentissage efficace pour un avenir brillant ! 🔥 Génie Facile vous accompagne dans votre parcours technique et industriel.",
+  "📢 Travaillez dur, apprenez intelligemment, réussissez avec Génie Facile. 📚 Bonne semaine technique du LETP Lomé ! 🎉"
+];
 
 const Index = () => {
-  console.log("Rendering Index page");
+  const [currentMessage, setCurrentMessage] = useState(messages[0]);
   const isMobile = useIsMobile();
   
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index = (index + 1) % messages.length;
+      setCurrentMessage(messages[index]);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const titleVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -22,21 +40,31 @@ const Index = () => {
     }
   };
 
-  const wordVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
-  };
-  
   return (
     <Layout>
-      <div className="space-y-4 sm:space-y-16 animate-fade-in mx-auto w-full max-w-7xl px-4">
+      <div 
+        className="fixed top-0 left-0 w-full bg-[#9b87f5] text-white font-bold py-2 z-50"
+        style={{
+          background: "linear-gradient(90deg, #9b87f5 0%, #6E59A5 100%)"
+        }}
+      >
+        <div className="whitespace-nowrap overflow-hidden">
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: "-100%" }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="inline-block"
+          >
+            {currentMessage}
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="space-y-4 sm:space-y-16 animate-fade-in mx-auto w-full max-w-7xl px-4 mt-16">
         {/* Hero Section */}
         <div className="text-center space-y-4 sm:space-y-8 max-w-4xl mx-auto py-4 sm:py-16">
           <motion.h1 
