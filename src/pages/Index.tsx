@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/Layout";
 import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
@@ -36,6 +37,18 @@ const Index = () => {
         duration: 0.8,
         ease: "easeOut",
         staggerChildren: 0.2
+      }
+    }
+  };
+
+  const wordVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
       }
     }
   };
