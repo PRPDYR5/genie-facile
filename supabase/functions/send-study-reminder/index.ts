@@ -19,47 +19,65 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Vérification des sessions à notifier...');
+    console.log('Démarrage de la vérification des sessions...');
     
-    // Récupérer les sessions qui doivent être notifiées
+    // Récupérer les sessions à notifier
     const now = new Date();
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
+    const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60000);
+    
+    console.log(`Recherche des sessions entre ${fiveMinutesAgo.toISOString()} et ${fiveMinutesFromNow.toISOString()}`);
+
     const { data: sessions, error: sessionsError } = await supabase
       .from('study_schedules')
-      .select('*, users:user_id(email)')
+      .select(`
+        *,
+        profiles:user_id (
+          username,
+          email
+        )
+      `)
       .eq('email_sent', false)
-      .lte('start_time', now.toISOString());
+      .gte('start_time', fiveMinutesAgo.toISOString())
+      .lte('start_time', fiveMinutesFromNow.toISOString());
 
     if (sessionsError) {
+      console.error('Erreur lors de la récupération des sessions:', sessionsError);
       throw sessionsError;
     }
 
     console.log(`${sessions?.length || 0} sessions trouvées à notifier`);
 
     if (!sessions || sessions.length === 0) {
-      return new Response(JSON.stringify({ message: 'Aucune session à notifier' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ message: 'Aucune session à notifier' }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Envoyer les emails pour chaque session
+    // Envoyer les emails
     const results = await Promise.all(
       sessions.map(async (session) => {
         try {
-          if (!session.users?.email) {
+          console.log('Traitement de la session:', session);
+          
+          if (!session.profiles?.email) {
             console.error('Email manquant pour la session:', session.id);
-            return null;
+            return { sessionId: session.id, status: 'error', error: 'Email manquant' };
           }
 
+          const username = session.profiles.username || 'étudiant';
+          
           const emailResponse = await resend.emails.send({
             from: 'Génie Facile <onboarding@resend.dev>',
-            to: session.users.email,
-            subject: `📚 Rappel d'étude – ${session.title}`,
+            to: session.profiles.email,
+            subject: `📚 C'est l'heure de votre session : ${session.title}`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #6366f1;">Rappel de session d'étude</h2>
-                <p>Salut,</p>
-                <p>Il est temps de commencer ta session d'étude : <strong>${session.title}</strong></p>
-                <p>Bon apprentissage avec Génie Facile !</p>
+                <h2 style="color: #6366f1;">C'est l'heure d'étudier !</h2>
+                <p>Salut ${username},</p>
+                <p>Il est temps de commencer votre session : <strong>${session.title}</strong></p>
+                <p>Bonne étude avec Génie Facile !</p>
                 <div style="margin-top: 20px; padding: 15px; background-color: #f3f4f6; border-radius: 8px;">
                   <p style="margin: 0;"><strong>Détails de la session :</strong></p>
                   <p style="margin: 5px 0;">Matière : ${session.subject}</p>
@@ -69,9 +87,7 @@ serve(async (req) => {
             `,
           });
 
-          if (emailResponse.error) {
-            throw emailResponse.error;
-          }
+          console.log('Réponse de Resend:', emailResponse);
 
           // Marquer l'email comme envoyé
           const { error: updateError } = await supabase
@@ -80,38 +96,29 @@ serve(async (req) => {
             .eq('id', session.id);
 
           if (updateError) {
+            console.error('Erreur lors de la mise à jour du statut:', updateError);
             throw updateError;
           }
 
           console.log(`Email envoyé avec succès pour la session ${session.id}`);
           return { sessionId: session.id, status: 'success' };
         } catch (error) {
-          console.error(`Erreur lors de l'envoi de l'email pour la session ${session.id}:`, error);
+          console.error(`Erreur pour la session ${session.id}:`, error);
           return { sessionId: session.id, status: 'error', error };
         }
       })
     );
 
-    console.log('Résultats des envois:', results);
-
     return new Response(
-      JSON.stringify({ 
-        message: 'Traitement des rappels terminé',
-        results 
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      JSON.stringify({ message: 'Traitement terminé', results }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
+
   } catch (error) {
     console.error('Erreur générale:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });

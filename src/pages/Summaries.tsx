@@ -1,119 +1,58 @@
+
 import { Layout } from "@/components/Layout";
-import { Card } from "@/components/ui/card";
-import { BookOpen } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
 
-const Summaries = () => {
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-
-  const levels = [
-    { value: "seconde", label: "Seconde" },
-    { value: "premiere", label: "Première" },
-    { value: "terminale", label: "Terminale" }
-  ];
-
-  const subjects = [
-    { value: "math", label: "Mathématiques" },
-    { value: "physics", label: "Sciences Physiques" },
-    { value: "info", label: "Informatique" }
-  ];
-
-  const summaries = [
-    {
-      title: "Mathématiques - Chapitre 1",
-      description: "Les fonctions et leurs propriétés",
-      level: "Seconde",
-      subject: "Mathématiques"
-    },
-    {
-      title: "Physique - Chapitre 1",
-      description: "Les forces et le mouvement",
-      level: "Seconde",
-      subject: "Sciences Physiques"
-    },
-    {
-      title: "Informatique - Chapitre 1",
-      description: "Introduction à l'algorithmique",
-      level: "Seconde",
-      subject: "Informatique"
-    }
-  ];
-
-  const filteredSummaries = summaries.filter(summary => {
-    if (selectedLevel && summary.level.toLowerCase() !== selectedLevel) return false;
-    if (selectedSubject && summary.subject !== subjects.find(s => s.value === selectedSubject)?.label) return false;
-    return true;
-  });
-
+export default function Summaries() {
   return (
     <Layout>
-      <div className="space-y-8 animate-fade-in">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold gradient-text">Résumés des cours</h1>
-          <p className="text-lg text-[#9b87f5]/80">
-            Des résumés concis pour mieux comprendre chaque chapitre
+      <div className="space-y-8 max-w-4xl mx-auto p-4">
+        <h1 className="text-4xl font-bold text-center gradient-text mb-8">
+          Bienvenue sur Génie Facile
+        </h1>
+        
+        <div className="text-center mb-8">
+          <p className="text-lg text-[#9b87f5]/80 mb-4">
+            Découvrez comment Génie Facile révolutionne l'apprentissage technique
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Niveau</label>
-            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir un niveau" />
-              </SelectTrigger>
-              <SelectContent>
-                {levels.map((level) => (
-                  <SelectItem key={level.value} value={level.value}>
-                    {level.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm text-[#9b87f5]">Matière</label>
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir une matière" />
-              </SelectTrigger>
-              <SelectContent>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject.value} value={subject.value}>
-                    {subject.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex justify-center mb-8">
+          <iframe 
+            src="https://gamma.app/embed/bxvteliose13vur" 
+            style={{ width: '700px', maxWidth: '100%', height: '450px' }}
+            allow="fullscreen" 
+            title="Génie Facile: Simplifier l'éducation technique en Afrique"
+            className="rounded-lg shadow-lg"
+          />
         </div>
 
-        <div className="grid gap-6">
-          {filteredSummaries.map((summary, index) => (
-            <Card key={index} className="p-6 glass card-hover">
-              <div className="flex items-start gap-4">
-                <div className="bg-[#9b87f5]/20 p-3 rounded-lg">
-                  <BookOpen className="h-6 w-6 text-[#9b87f5]" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-[#9b87f5]">{summary.title}</h3>
-                  <p className="text-[#9b87f5]/70">{summary.description}</p>
-                  <div className="flex gap-4 text-sm text-[#9b87f5]/60">
-                    <span>{summary.level}</span>
-                    <span>•</span>
-                    <span>{summary.subject}</span>
-                  </div>
-                </div>
+        <div className="grid gap-6 mt-8">
+          <div className="bg-[#9b87f5]/10 p-6 rounded-lg">
+            <h2 className="text-2xl font-semibold text-[#9b87f5] mb-4">
+              Nos Fonctionnalités Principales
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium text-[#9b87f5]">Sessions d'Étude Personnalisées</h3>
+                <p className="text-muted-foreground">
+                  Planifiez vos sessions d'étude avec des rappels automatiques pour maintenir votre rythme d'apprentissage.
+                </p>
               </div>
-            </Card>
-          ))}
+              <div>
+                <h3 className="text-lg font-medium text-[#9b87f5]">Assistant IA Personnalisé</h3>
+                <p className="text-muted-foreground">
+                  Obtenez des réponses instantanées à vos questions grâce à notre assistant alimenté par l'IA.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-[#9b87f5]">Ressources Pédagogiques</h3>
+                <p className="text-muted-foreground">
+                  Accédez à une bibliothèque de ressources adaptées à votre niveau et à vos besoins.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
   );
-};
-
-export default Summaries;
+}
