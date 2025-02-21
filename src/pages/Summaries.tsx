@@ -17,40 +17,12 @@ export default function Summaries() {
 
         <div className="w-full h-[80vh]">
           <iframe 
-            src="https://gamma.app/embed/bxvteliose13vur" 
+            src="https://genie-facile-simplifier--418b53w.gamma.site" 
             style={{ width: '100%', height: '100%' }}
             allow="fullscreen" 
             title="Génie Facile: Simplifier l'éducation technique en Afrique"
             className="rounded-lg shadow-lg"
           />
-        </div>
-
-        <div className="grid gap-6 mt-8">
-          <div className="bg-[#9b87f5]/10 p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold text-[#9b87f5] mb-4">
-              Nos Fonctionnalités Principales
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-medium text-[#9b87f5]">Sessions d'Étude Personnalisées</h3>
-                <p className="text-muted-foreground">
-                  Planifiez vos sessions d'étude avec des rappels automatiques pour maintenir votre rythme d'apprentissage.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-[#9b87f5]">Assistant IA Personnalisé</h3>
-                <p className="text-muted-foreground">
-                  Obtenez des réponses instantanées à vos questions grâce à notre assistant alimenté par l'IA.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-[#9b87f5]">Ressources Pédagogiques</h3>
-                <p className="text-muted-foreground">
-                  Accédez à une bibliothèque de ressources adaptées à votre niveau et à vos besoins.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </Layout>
