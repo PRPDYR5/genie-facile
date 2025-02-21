@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,7 +18,6 @@ export const StudyScheduler = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [emailNotification, setEmailNotification] = useState(true);
   const { toast } = useToast();
 
   const subjects = [
@@ -73,7 +71,8 @@ export const StudyScheduler = () => {
         parseInt(endTime.split(":")[1])
       );
 
-      const { error: sessionError } = await supabase
+      // Créer la session d'étude
+      const { data: sessionData, error: sessionError } = await supabase
         .from('study_schedules')
         .insert({
           user_id: user.id,
@@ -82,11 +81,39 @@ export const StudyScheduler = () => {
           end_time: endDateTime.toISOString(),
           subject,
           level,
-          notification_enabled: emailNotification,
+          notification_enabled: true,
           email_sent: false
-        });
+        })
+        .select()
+        .single();
 
       if (sessionError) throw sessionError;
+
+      // Programmer l'envoi de l'email
+      const timeUntilSession = startDateTime.getTime() - Date.now();
+      if (timeUntilSession > 0) {
+        setTimeout(async () => {
+          try {
+            const { error: emailError } = await supabase.functions.invoke('send-study-reminder', {
+              body: { session: sessionData, user }
+            });
+
+            if (emailError) {
+              console.error('Erreur lors de l\'envoi du rappel:', emailError);
+              return;
+            }
+
+            // Mettre à jour le statut de l'email
+            await supabase
+              .from('study_schedules')
+              .update({ email_sent: true })
+              .eq('id', sessionData.id);
+
+          } catch (error) {
+            console.error('Erreur lors de l\'envoi du rappel:', error);
+          }
+        }, timeUntilSession);
+      }
 
       toast({
         title: "Succès",
@@ -196,15 +223,6 @@ export const StudyScheduler = () => {
                 required
               />
             </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="email-notifications"
-              checked={emailNotification}
-              onCheckedChange={setEmailNotification}
-            />
-            <Label htmlFor="email-notifications">Activer les rappels par email</Label>
           </div>
 
           <Button type="submit" className="w-full bg-[#9b87f5] hover:bg-[#8b77e5]">
