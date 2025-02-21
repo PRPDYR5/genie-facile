@@ -45,7 +45,7 @@ export const usePreferences = () => {
     try {
       console.log("Sauvegarde des préférences locales:", prefs);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-      localStorage.setItem('theme', prefs.theme);
+      document.documentElement.setAttribute('data-theme', prefs.theme);
       applyPreferences(prefs);
       console.log("Préférences sauvegardées avec succès");
     } catch (error) {
@@ -56,13 +56,14 @@ export const usePreferences = () => {
   const applyPreferences = (prefs: UserPreferences) => {
     console.log("Application des préférences:", prefs);
     
-    // Application du thème
+    // Application du thème avec attribut data-theme
+    document.documentElement.setAttribute('data-theme', prefs.theme);
     if (prefs.theme === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
     
     // Taille de police
@@ -76,118 +77,18 @@ export const usePreferences = () => {
     // Langue
     document.documentElement.lang = prefs.language;
     
-    // Mode focus
-    if (prefs.focus_mode) {
-      document.body.classList.add('focus-mode');
-    } else {
-      document.body.classList.remove('focus-mode');
-    }
-    
     console.log("Préférences appliquées avec succès");
   };
 
-  const { data: preferences, isLoading } = useQuery({
-    queryKey: ['preferences'],
-    queryFn: async () => {
-      console.log("Chargement des préférences depuis Supabase...");
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        const localPrefs = loadLocalPreferences();
-        console.log("Aucun utilisateur connecté, utilisation des préférences locales:", localPrefs);
-        return localPrefs;
-      }
-
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Erreur lors du chargement des préférences:', error);
-        return loadLocalPreferences();
-      }
-
-      if (data) {
-        console.log("Préférences chargées depuis Supabase:", data);
-        saveLocalPreferences(data);
-        return data;
-      }
-
-      const localPrefs = loadLocalPreferences();
-      if (user) {
-        const { error: insertError } = await supabase
-          .from('user_preferences')
-          .insert([{ 
-            user_id: user.id,
-            ...localPrefs
-          }]);
-
-        if (insertError) {
-          console.error('Erreur lors de la création des préférences:', insertError);
-        }
-      }
-      
-      return localPrefs;
-    },
-  });
-
-  const { mutate: updatePreferences } = useMutation({
-    mutationFn: async (newPrefs: Partial<UserPreferences>) => {
-      console.log("Mise à jour des préférences:", newPrefs);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const updatedPrefs = { ...preferences, ...newPrefs };
-      saveLocalPreferences(updatedPrefs);
-
-      if (!user) {
-        return updatedPrefs;
-      }
-
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .update(newPrefs)
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Erreur lors de la mise à jour des préférences:', error);
-        throw error;
-      }
-
-      return data || updatedPrefs;
-    },
-    onSuccess: (data) => {
-      queryClient.setQueryData(['preferences'], data);
-      applyPreferences(data);
-      toast({
-        title: "Succès",
-        description: "Vos préférences ont été mises à jour",
-      });
-    },
-    onError: (error) => {
-      console.error('Erreur lors de la sauvegarde des préférences:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les préférences",
-      });
-    }
-  });
-
   // Appliquer les préférences au chargement initial
   useEffect(() => {
-    if (preferences) {
-      console.log("Nouvelles préférences reçues, application...");
-      applyPreferences(preferences);
-    }
-  }, [preferences]);
+    const savedPrefs = loadLocalPreferences();
+    applyPreferences(savedPrefs);
+  }, []);
 
   return {
-    preferences,
-    isLoading,
-    updatePreferences,
+    loadLocalPreferences,
+    saveLocalPreferences,
+    applyPreferences,
   };
 };
