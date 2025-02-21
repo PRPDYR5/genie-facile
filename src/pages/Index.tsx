@@ -4,7 +4,7 @@ import { UserDashboard } from "@/components/UserDashboard";
 import { StudyScheduler } from "@/components/StudyScheduler";
 import { StudyScheduleList } from "@/components/StudyScheduleList";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const messages = [
@@ -16,14 +16,12 @@ const messages = [
 ];
 
 const Index = () => {
-  const [currentMessage, setCurrentMessage] = useState(messages[0]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const isMobile = useIsMobile();
   
   useEffect(() => {
-    let index = 0;
     const interval = setInterval(() => {
-      index = (index + 1) % messages.length;
-      setCurrentMessage(messages[index]);
+      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -48,19 +46,22 @@ const Index = () => {
           background: "linear-gradient(90deg, #9b87f5 0%, #6E59A5 100%)"
         }}
       >
-        <div className="whitespace-nowrap overflow-hidden">
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: "-100%" }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="inline-block"
-          >
-            {currentMessage}
-          </motion.div>
+        <div className="whitespace-nowrap overflow-hidden relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentMessageIndex}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{
+                duration: 0.5,
+                ease: "easeInOut"
+              }}
+              className="text-center px-4"
+            >
+              {messages[currentMessageIndex]}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
