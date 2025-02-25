@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -22,7 +21,12 @@ const courses: Record<string, Record<string, CourseInfo>> = {
   seconde: {
     math: {
       name: "Mathématiques",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1fOG4fn2ji3RasSxmhHXsnOMDs29i7ANj/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     physics: {
       name: "Sciences Physiques",
@@ -51,17 +55,13 @@ const courses: Record<string, Record<string, CourseInfo>> = {
     cm: {
       name: "Construction Mécanique",
       pdfs: [
-        { 
+        {
           url: "https://drive.google.com/file/d/10rNCZO7UZm-lCeChCn9sHPOx-6Nlse_c/view?usp=sharing",
           title: "Partie 1"
         },
         {
           url: "https://drive.google.com/file/d/10BsDdE-AmA6Pa1cHJ6AxZGaSUSn1ll6-/view?usp=sharing",
           title: "Partie 2"
-        },
-        {
-          url: "https://drive.google.com/file/d/1E0WxTthKDPK-2NqlCA8o2W0St3KSIdo8/view?usp=sharing",
-          title: "Partie 3"
         }
       ]
     },
@@ -77,15 +77,30 @@ const courses: Record<string, Record<string, CourseInfo>> = {
   premiere: {
     math: {
       name: "Mathématiques",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1-V4pp4tSaOxIPcA81D1sMVoQKdPH0MOe/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     physics: {
       name: "Sciences Physiques",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1eAYwN6aok-KtenwNjrPh1Ys2NErswDC9/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     info: {
       name: "Informatique",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     technologie: {
       name: "Technologie",
@@ -119,7 +134,12 @@ const courses: Record<string, Record<string, CourseInfo>> = {
   terminale: {
     math: {
       name: "Mathématiques",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1rf1c14mTVBT0LiCjGEfMJ_lKsEIIO7J4/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     physics: {
       name: "Sciences Physiques",
@@ -132,7 +152,16 @@ const courses: Record<string, Record<string, CourseInfo>> = {
     },
     info: {
       name: "Informatique",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1hZCyx3nuPEtc4LZAWFAnKyrAaYD2WVN7/view?usp=sharing",
+          title: "Partie 1"
+        },
+        {
+          url: "https://drive.google.com/file/d/1EN-VnNdOsOr_iDvjjd6eD-z_ZzerbpEU/view?usp=sharing",
+          title: "Partie 2"
+        }
+      ]
     },
     technologie: {
       name: "Technologie",
@@ -170,7 +199,12 @@ const courses: Record<string, Record<string, CourseInfo>> = {
     },
     cm: {
       name: "Construction Mécanique",
-      pdfs: null
+      pdfs: [
+        {
+          url: "https://drive.google.com/file/d/1E0WxTthKDPK-2NqlCA8o2W0St3KSIdo8/view?usp=sharing",
+          title: "Cours complet"
+        }
+      ]
     },
     automatisme: {
       name: "Automatisme",
