@@ -15,18 +15,22 @@ interface StudyAlarmProps {
 export const StudyAlarm = ({ sessions }: StudyAlarmProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSession, setCurrentSession] = useState<{id: string; title: string} | null>(null);
-  const [audio] = useState(new Audio('/alarm.mp3'));
+  const [audio] = useState(() => {
+    const audio = new Audio('/alarm.mp3');
+    audio.loop = true; // Ensure the audio loops
+    return audio;
+  });
   const { toast } = useToast();
 
+  // Cleanup effect pour l'audio
   useEffect(() => {
-    audio.loop = true;
-    
     return () => {
       audio.pause();
       audio.currentTime = 0;
     };
   }, [audio]);
 
+  // Effet pour vérifier les sessions
   useEffect(() => {
     const checkSessions = () => {
       const now = new Date();
@@ -35,24 +39,30 @@ export const StudyAlarm = ({ sessions }: StudyAlarmProps) => {
         const sessionTime = new Date(session.start_time);
         const timeDiff = Math.abs(now.getTime() - sessionTime.getTime());
         
-        // Si on est dans la fenêtre de 5 minutes après le début de la session
-        if (timeDiff < 300000 && !isPlaying) {
+        if (timeDiff < 300000 && !isPlaying) { // 5 minutes
           setIsPlaying(true);
           setCurrentSession(session);
-          audio.play();
+          
+          // Essayer de jouer l'audio avec gestion d'erreur
+          try {
+            audio.play().catch(error => {
+              console.error('Erreur lors de la lecture de l\'audio:', error);
+            });
+          } catch (error) {
+            console.error('Erreur lors de la lecture de l\'audio:', error);
+          }
           
           toast({
             title: "C'est l'heure de votre session d'étude !",
             description: `Il est temps de commencer : ${session.title}`,
-            duration: 0, // La notification reste jusqu'à ce qu'on la ferme
+            duration: 0,
           });
         }
       });
     };
 
-    // Vérifier toutes les 30 secondes
-    const interval = setInterval(checkSessions, 30000);
-    checkSessions(); // Vérifier immédiatement au montage
+    const interval = setInterval(checkSessions, 30000); // Vérifier toutes les 30 secondes
+    checkSessions(); // Vérification immédiate
 
     return () => {
       clearInterval(interval);
