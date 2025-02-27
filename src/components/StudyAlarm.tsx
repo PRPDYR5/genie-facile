@@ -34,34 +34,48 @@ export const StudyAlarm = ({ sessions }: StudyAlarmProps) => {
   useEffect(() => {
     const checkSessions = () => {
       const now = new Date();
+      console.log("Vérification des sessions à:", now.toISOString());
       
       sessions.forEach(session => {
         const sessionTime = new Date(session.start_time);
-        const timeDiff = Math.abs(now.getTime() - sessionTime.getTime());
+        console.log("Session:", session.title, "heure de début:", sessionTime.toISOString());
         
-        if (timeDiff < 300000 && !isPlaying) { // 5 minutes
-          setIsPlaying(true);
-          setCurrentSession(session);
+        // Calcul de la différence de temps en millisecondes
+        const timeDiff = sessionTime.getTime() - now.getTime();
+        console.log("Différence de temps pour", session.title, ":", timeDiff, "ms");
+        
+        // Déclenchement si l'heure de la session est soit:
+        // 1. Dans le passé mais moins de 5 minutes (300000 ms)
+        // 2. Dans moins d'une minute dans le futur
+        if ((timeDiff <= 0 && timeDiff > -300000) || (timeDiff > 0 && timeDiff < 60000)) {
+          console.log("Condition de déclenchement remplie pour", session.title);
           
-          // Essayer de jouer l'audio avec gestion d'erreur
-          try {
-            audio.play().catch(error => {
+          if (!isPlaying) {
+            console.log("Déclenchement de l'alarme pour", session.title);
+            setIsPlaying(true);
+            setCurrentSession(session);
+            
+            // Essayer de jouer l'audio avec gestion d'erreur
+            try {
+              audio.play().catch(error => {
+                console.error('Erreur lors de la lecture de l\'audio:', error);
+              });
+            } catch (error) {
               console.error('Erreur lors de la lecture de l\'audio:', error);
+            }
+            
+            toast({
+              title: "C'est l'heure de votre session d'étude !",
+              description: `Il est temps de commencer : ${session.title}`,
+              duration: 0,
             });
-          } catch (error) {
-            console.error('Erreur lors de la lecture de l\'audio:', error);
           }
-          
-          toast({
-            title: "C'est l'heure de votre session d'étude !",
-            description: `Il est temps de commencer : ${session.title}`,
-            duration: 0,
-          });
         }
       });
     };
 
-    const interval = setInterval(checkSessions, 30000); // Vérifier toutes les 30 secondes
+    // Vérifier plus fréquemment (toutes les 10 secondes)
+    const interval = setInterval(checkSessions, 10000);
     checkSessions(); // Vérification immédiate
 
     return () => {
