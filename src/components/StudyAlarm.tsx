@@ -15,68 +15,44 @@ interface StudyAlarmProps {
 export const StudyAlarm = ({ sessions }: StudyAlarmProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSession, setCurrentSession] = useState<{id: string; title: string} | null>(null);
-  const [audio] = useState(() => {
-    const audio = new Audio('/alarm.mp3');
-    audio.loop = true; // Ensure the audio loops
-    return audio;
-  });
+  const [audio] = useState(new Audio('/alarm.mp3'));
   const { toast } = useToast();
 
-  // Cleanup effect pour l'audio
   useEffect(() => {
+    audio.loop = true;
+    
     return () => {
       audio.pause();
       audio.currentTime = 0;
     };
   }, [audio]);
 
-  // Effet pour vérifier les sessions
   useEffect(() => {
     const checkSessions = () => {
       const now = new Date();
-      console.log("Vérification des sessions à:", now.toISOString());
       
       sessions.forEach(session => {
         const sessionTime = new Date(session.start_time);
-        console.log("Session:", session.title, "heure de début:", sessionTime.toISOString());
+        const timeDiff = Math.abs(now.getTime() - sessionTime.getTime());
         
-        // Calcul de la différence de temps en millisecondes
-        const timeDiff = sessionTime.getTime() - now.getTime();
-        console.log("Différence de temps pour", session.title, ":", timeDiff, "ms");
-        
-        // Déclenchement si l'heure de la session est soit:
-        // 1. Dans le passé mais moins de 5 minutes (300000 ms)
-        // 2. Dans moins d'une minute dans le futur
-        if ((timeDiff <= 0 && timeDiff > -300000) || (timeDiff > 0 && timeDiff < 60000)) {
-          console.log("Condition de déclenchement remplie pour", session.title);
+        // Si on est dans la fenêtre de 5 minutes après le début de la session
+        if (timeDiff < 300000 && !isPlaying) {
+          setIsPlaying(true);
+          setCurrentSession(session);
+          audio.play();
           
-          if (!isPlaying) {
-            console.log("Déclenchement de l'alarme pour", session.title);
-            setIsPlaying(true);
-            setCurrentSession(session);
-            
-            // Essayer de jouer l'audio avec gestion d'erreur
-            try {
-              audio.play().catch(error => {
-                console.error('Erreur lors de la lecture de l\'audio:', error);
-              });
-            } catch (error) {
-              console.error('Erreur lors de la lecture de l\'audio:', error);
-            }
-            
-            toast({
-              title: "C'est l'heure de votre session d'étude !",
-              description: `Il est temps de commencer : ${session.title}`,
-              duration: 0,
-            });
-          }
+          toast({
+            title: "C'est l'heure de votre session d'étude !",
+            description: `Il est temps de commencer : ${session.title}`,
+            duration: 0, // La notification reste jusqu'à ce qu'on la ferme
+          });
         }
       });
     };
 
-    // Vérifier plus fréquemment (toutes les 10 secondes)
-    const interval = setInterval(checkSessions, 10000);
-    checkSessions(); // Vérification immédiate
+    // Vérifier toutes les 30 secondes
+    const interval = setInterval(checkSessions, 30000);
+    checkSessions(); // Vérifier immédiatement au montage
 
     return () => {
       clearInterval(interval);
